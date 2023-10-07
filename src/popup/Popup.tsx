@@ -1,12 +1,11 @@
-import { Counter } from '../app/features/counter';
+import { EntityViewer } from '../app/features/entityViewer';
 
 const Popup = () => {
-  document.body.className = 'w-[30rem] h-[15rem]';
+  document.body.className = 'w-[40rem] h-[30rem]';
 
   return (
     <>
-      <div className="flex justify-center mt-2 text-base">Popup Counter</div>
-      <Counter />
+      <EntityViewer />
     </>
   );
 };

@@ -7,8 +7,8 @@ import { version } from '../package.json';
 
 const manifest = defineManifest(async (env) => ({
   manifest_version: 3,
-  name: `${env.mode === 'development' ? '[Dev] ' : ''}Um Salesforce Vivache`,
-  description: 'Um Salesforce Vivache',
+  name: `${env.mode === 'development' ? '[Dev] ' : ''}Um Salesforce Vivace`,
+  description: 'Um Salesforce Vivace',
   version,
   background: {
     service_worker: 'background/index.ts',
@@ -19,7 +19,12 @@ const manifest = defineManifest(async (env) => ({
       js: ['content/index.tsx'],
     },
   ],
-  host_permissions: ['<all_urls>'],
+  host_permissions: [
+    'https://*.salesforce.com/*',
+    'https://*.force.com/*',
+    'https://*.cloudforce.com/*',
+    'https://*.visualforce.com/*',
+  ],
   options_ui: {
     page: 'options/options.html',
     open_in_tab: true,

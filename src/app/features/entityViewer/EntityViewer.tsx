@@ -96,6 +96,74 @@ const OBJECT_INFOS_MOCK = [
     { value: 'snps_um__Unit__c', readOnly: true },
     { value: '単位', readOnly: true },
   ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
+  [
+    { value: 'snps_um__Unit__c', readOnly: true },
+    { value: '単位', readOnly: true },
+  ],
 ];
 const FIELD_INFOS_BY_OBJECT_MOCK = {
   snps_um__Item__c: [
@@ -190,7 +258,7 @@ export const EntityViewer: FC = () => {
         <Grid xs={12}>
           <div className="flex justify-center mt-2 text-base">Entity Viewer</div>
         </Grid>
-        <Grid xs={6}>
+        <Grid xs={3}>
           <Grid xs={11} xsOffset={1}>
             <TextField
               label="オブジェクト絞り込み"
@@ -205,19 +273,17 @@ export const EntityViewer: FC = () => {
               variant="standard"
             />
           </Grid>
-          <Grid xs={12}>
-            <div style={{ maxHeight: 400, overflow: 'auto' }}>
-              <Spreadsheet
-                data={filterdObjects}
-                columnLabels={OBJECT_COLUMNS}
-                selected={objectSelection}
-                onActivate={onSelectObject}
-              />
-            </div>
+          <Grid xs={12} style={{ maxHeight: 600, overflow: 'auto' }}>
+            <Spreadsheet
+              data={filterdObjects}
+              columnLabels={OBJECT_COLUMNS}
+              selected={objectSelection}
+              onActivate={onSelectObject}
+            />
           </Grid>
         </Grid>
 
-        <Grid xs={6}>
+        <Grid xs={9}>
           <Grid xs={11} xsOffset={1}>
             <TextField
               label="項目絞り込み"
@@ -226,7 +292,7 @@ export const EntityViewer: FC = () => {
               variant="standard"
             />
           </Grid>
-          <Grid xs={12}>
+          <Grid xs={12} style={{ maxHeight: 600, overflow: 'auto' }}>
             <Spreadsheet data={filterdFields} columnLabels={FIELD_COLUMNS} />
           </Grid>
         </Grid>

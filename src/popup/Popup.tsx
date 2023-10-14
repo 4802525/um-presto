@@ -1,11 +1,19 @@
-import { EntityViewer } from '../app/features/entityViewer';
+import { Button } from '@mui/material';
 
 const Popup = () => {
-  document.body.className = 'w-[40rem] h-[30rem]';
+  document.body.className = 'w-[10rem] h-[20rem]';
+
+  const entityViewUrl = '../pages/entityView/entityView.html';
 
   return (
     <>
-      <EntityViewer />
+      <Button
+        onClick={() => {
+          window.open(entityViewUrl, '_blank');
+        }}
+      >
+        Viewer Page
+      </Button>
     </>
   );
 };

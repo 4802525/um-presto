@@ -1,4 +1,3 @@
-import browser from 'webextension-polyfill';
 import store, { initializeWrappedStore } from '../app/store';
 import { Session } from '../foundations/sfConnections';
 

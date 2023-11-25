@@ -14,6 +14,10 @@ export class SfConnection {
     const instanceHostName = message.hostname;
     const sessionId = message.sessionId;
 
+    if (!instanceHostName || !sessionId) {
+      return;
+    }
+
     setDefaultConfig({
       instanceUrl: `https://${instanceHostName}`,
       accessToken: sessionId,

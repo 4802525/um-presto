@@ -1,13 +1,7 @@
-import store, { initializeWrappedStore } from '../app/store';
+import { initializeWrappedStore } from '../app/store';
 import { Session } from '../foundations/sfConnections';
 
 initializeWrappedStore();
-
-store.subscribe(() => {
-  // access store state
-  // const state = store.getState();
-  // console.log('state', state);
-});
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.message) {

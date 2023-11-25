@@ -1,9 +1,7 @@
+import { setDefaultConfig } from 'ts-force';
 import { Session } from './Session';
 
 export class SfConnection {
-  private instanceHostName: string;
-  private sessionId: string;
-
   async getSession(sfHost: string) {
     const message = await new Promise<Session | null>((resolve) =>
       chrome.runtime.sendMessage({ message: 'getSession', sfHost }, resolve)
@@ -13,7 +11,12 @@ export class SfConnection {
       throw new Error('セッションが読み取れませんでした．');
     }
 
-    this.instanceHostName = message.hostname;
-    this.sessionId = message.sessionId;
+    const instanceHostName = message.hostname;
+    const sessionId = message.sessionId;
+
+    setDefaultConfig({
+      instanceUrl: `https://${instanceHostName}`,
+      accessToken: sessionId,
+    });
   }
 }

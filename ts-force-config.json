@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ChuckJonas/ts-force/master/ts-force-gen/ts-force-config.schema.json",
+  "sObjects": ["EntityDefinition", "FieldDefinition"],
+  "auth": {
+    "username": "admin@umpm-test2.com.2311Eu2",
+    "instanceUrl": "https://test.salesforce.com"
+  },
+  "outPath": "./src/generated/"
+}

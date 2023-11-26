@@ -72,15 +72,16 @@ export const EntityViewer: FC<EntityViewerProps> = (props) => {
 
   return (
     <>
-      <Grid container rowSpacing={1} columnSpacing={1}>
+      <Grid container spacing={1} className="p-2">
         <Grid xs={12}>
           <div className="flex justify-center mt-2 text-base">Entity Viewer</div>
         </Grid>
-        <Grid xs={5}>
-          <Grid xs={11} xsOffset={1}>
+        <Grid xs={4}>
+          <Grid xs={12}>
             <TextField
               label="オブジェクト絞り込み"
               value={objectFilteringText}
+              variant="standard"
               onChange={(event) => {
                 setFieldFilteringText('');
                 setObjectFilteringText(event.target.value);
@@ -88,10 +89,9 @@ export const EntityViewer: FC<EntityViewerProps> = (props) => {
               onBlur={() => {
                 setDefaultObject();
               }}
-              variant="standard"
             />
           </Grid>
-          <Grid xs={12} style={{ maxHeight: 600, overflow: 'auto' }}>
+          <Grid xs={12} style={{ height: 500, overflow: 'auto' }}>
             <Spreadsheet
               data={filterdObjects}
               columnLabels={OBJECT_COLUMNS}
@@ -101,16 +101,16 @@ export const EntityViewer: FC<EntityViewerProps> = (props) => {
           </Grid>
         </Grid>
 
-        <Grid xs={7}>
-          <Grid xs={11} xsOffset={1}>
+        <Grid xs={8}>
+          <Grid xs={12} className="p-2">
             <TextField
               label="項目絞り込み"
               value={fieldFilteringText}
-              onChange={(event) => setFieldFilteringText(event.target.value)}
               variant="standard"
+              onChange={(event) => setFieldFilteringText(event.target.value)}
             />
           </Grid>
-          <Grid xs={12} style={{ maxHeight: 600, overflow: 'auto' }}>
+          <Grid xs={12} style={{ height: 500, overflow: 'auto' }}>
             <Spreadsheet data={filterdFields} columnLabels={FIELD_COLUMNS} />
           </Grid>
         </Grid>

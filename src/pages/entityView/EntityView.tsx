@@ -42,6 +42,7 @@ const EntityView = () => {
         [{ field: f.select('qualifiedApiName'), val: '%Share', op: 'LIKE', not: true }],
         [{ field: f.select('qualifiedApiName'), val: '%Feed', op: 'LIKE', not: true }],
         [{ field: f.select('qualifiedApiName'), val: '%ChangeEvent', op: 'LIKE', not: true }],
+        [{ field: f.select('qualifiedApiName'), val: '%History', op: 'LIKE', not: true }],
       ],
       orderBy: [{ field: f.select('label') }],
     })).then((entities) => {

@@ -7,8 +7,8 @@ import { version } from '../package.json';
 
 const manifest = defineManifest(async (env) => ({
   manifest_version: 3,
-  name: `${env.mode === 'development' ? '[Dev] ' : ''}Um Salesforce Vivace`,
-  description: 'Um Salesforce Vivace',
+  name: `${env.mode === 'development' ? '[Dev] ' : ''}Um Salesforce Presto`,
+  description: 'Um Salesforce Presto',
   version,
   background: {
     service_worker: 'background/index.ts',

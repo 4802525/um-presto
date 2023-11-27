@@ -22,7 +22,7 @@ interface EntityViewerProps {
 }
 
 const OBJECT_COLUMNS = ['オブジェクト名', 'Api参照名'];
-const FIELD_COLUMNS = ['項目名', 'Api参照名'];
+const FIELD_COLUMNS = ['項目名', 'Api参照名', '型'];
 
 export const EntityViewer: FC<EntityViewerProps> = (props) => {
   ENTITY_VIEW_SYMBOL;

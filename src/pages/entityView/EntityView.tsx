@@ -34,7 +34,7 @@ const EntityView = () => {
       select: [
         ...f.select('id', 'qualifiedApiName', 'label'),
         f.subQuery('fields', (subF) => ({
-          select: subF.select('id', 'qualifiedApiName', 'label'),
+          select: subF.select('id', 'qualifiedApiName', 'label', 'dataType'),
         })),
       ],
       where: [
@@ -64,6 +64,7 @@ const EntityView = () => {
           entity.fields?.map((field) => [
             { value: field.label, readOnly: true },
             { value: field.qualifiedApiName, readOnly: true },
+            { value: field.dataType, readOnly: true },
           ]) ?? []
         );
       }

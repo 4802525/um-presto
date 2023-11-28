@@ -1,9 +1,9 @@
-import { Button } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 const POPUP_SYMBOL = Symbol('Popup');
 const Popup = () => {
-  document.body.className = 'w-[10rem] h-[20rem]';
+  document.body.className = 'w-[10rem] h-[5rem]';
 
   const entityViewUrl = '../pages/entityView/entityView.html';
 
@@ -22,13 +22,17 @@ const Popup = () => {
 
   return (
     <>
-      <Button
-        onClick={() => {
-          window.open(`${entityViewUrl}?${urlParams}`, '_blank');
-        }}
-      >
-        Viewer Page
-      </Button>
+      <Grid container spacing={1} justifyContent="center">
+        <Grid item>
+          <Button
+            onClick={() => {
+              window.open(`${entityViewUrl}?${urlParams}`, '_blank');
+            }}
+          >
+            Viewer Page
+          </Button>
+        </Grid>
+      </Grid>
     </>
   );
 };

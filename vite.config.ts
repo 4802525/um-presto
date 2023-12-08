@@ -3,6 +3,16 @@ import react from '@vitejs/plugin-react';
 import { join, resolve } from 'path';
 import { defineConfig } from 'vite';
 import manifest from './src/manifest';
+import { globSync } from 'glob'; //ワイルドカードを使って各ファイルの名前を取得し一括で登録するため
+import { fileURLToPath } from 'node:url'; //上記の実行時にURLをpathに変更させるため
+
+const inputPagesHtmlArray = globSync(['src/pages/**/*.html'], { ignore: ['node_modules/**'] }).map(
+  (file) => {
+    console.log(file.replace('.html', ''));
+    return [file.replace('.html', ''), fileURLToPath(new URL(file, import.meta.url))];
+  }
+);
+const inputObj = Object.fromEntries(inputPagesHtmlArray);
 
 export default defineConfig({
   // @see https://github.com/crxjs/chrome-extension-tools/issues/696
@@ -19,6 +29,7 @@ export default defineConfig({
   build: {
     outDir: resolve(__dirname, 'dist'),
     rollupOptions: {
+      input: inputObj,
       output: {
         chunkFileNames: 'assets/chunk-[hash].js',
       },

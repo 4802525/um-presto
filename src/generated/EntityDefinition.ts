@@ -523,7 +523,8 @@ export class EntityDefinition extends RestObject {
     required: false,
     reference: undefined,
     childRelationship: false,
-    salesforceType: SalesforceFieldType.COMPLEXVALUE,
+    // TODO:SalesforceFieldType.COMPLEXVALUEを使用する場合にTSCにてエラーとなる
+    salesforceType: SalesforceFieldType.ID,
     salesforceLabel: 'サポートされているレコードタイプ',
     externalId: false,
   })

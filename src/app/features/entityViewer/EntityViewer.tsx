@@ -19,39 +19,46 @@ const ENTITY_VIEW_SYMBOL = Symbol('EntityViewSymbol');
 interface EntityViewerProps {
   objectInformations: Matrix<CellBase>;
   fieldInformationsByObject: { [key: string]: Matrix<CellBase> };
+  onSelect?: (value: string) => void;
 }
 
 const OBJECT_COLUMNS = ['オブジェクト名', 'Api参照名'];
 const FIELD_COLUMNS = ['項目名', 'Api参照名', '型'];
 
-export const EntityViewer: FC<EntityViewerProps> = (props) => {
+export const EntityViewer: FC<EntityViewerProps> = ({
+  objectInformations,
+  fieldInformationsByObject,
+  onSelect,
+}) => {
   ENTITY_VIEW_SYMBOL;
   useEffect(() => {
     setFieldFilteringText('');
     setDefaultObject();
-  }, [props.objectInformations]);
+  }, [objectInformations]);
 
   // オブジェクト側の操作
   const [objectFilteringText, setObjectFilteringText] = useState('');
   const [fieldFilteringText, setFieldFilteringText] = useState('');
 
   const filterdObjects = useMemo(() => {
-    return props.objectInformations.filter((object) => {
+    return objectInformations.filter((object) => {
       return object.some((o) => o?.value.includes(objectFilteringText));
     });
-  }, [props.objectInformations, objectFilteringText]);
+  }, [objectInformations, objectFilteringText]);
 
   const [objectSelection, setObjectSelection] = useState<EntireRowsSelection | EmptySelection>(
     new EmptySelection()
   );
   function onSelectObject(active: Point) {
     setObjectSelection(new EntireRowsSelection(active.row, active.row));
+    onSelect?.(selectedObjectName(objectSelection));
   }
 
   function setDefaultObject() {
     const selection =
       filterdObjects.length > 0 ? new EntireRowsSelection(0, 0) : new EmptySelection();
     setObjectSelection(selection);
+    onSelect?.(selectedObjectName(objectSelection));
   }
 
   function selectedObjectName(objectSelection: EntireRowsSelection | EmptySelection) {
@@ -64,18 +71,15 @@ export const EntityViewer: FC<EntityViewerProps> = (props) => {
 
   // 項目側の操作
   const filterdFields = useMemo(() => {
-    const fields = props.fieldInformationsByObject[selectedObjectName(objectSelection)] ?? [];
+    const fields = fieldInformationsByObject[selectedObjectName(objectSelection)] ?? [];
     return fields.filter((field) => {
       return field.some((f) => f?.value.includes(fieldFilteringText));
     });
-  }, [props.fieldInformationsByObject, filterdObjects, objectSelection, fieldFilteringText]);
+  }, [fieldInformationsByObject, filterdObjects, objectSelection, fieldFilteringText]);
 
   return (
     <>
-      <Grid container spacing={1} className="p-2">
-        <Grid xs={12}>
-          <div className="flex justify-center mt-2 text-base">Entity Viewer</div>
-        </Grid>
+      <Grid container spacing={1}>
         <Grid xs={4}>
           <Grid xs={12}>
             <TextField
@@ -85,9 +89,6 @@ export const EntityViewer: FC<EntityViewerProps> = (props) => {
               onChange={(event) => {
                 setFieldFilteringText('');
                 setObjectFilteringText(event.target.value);
-              }}
-              onBlur={() => {
-                setDefaultObject();
               }}
             />
           </Grid>

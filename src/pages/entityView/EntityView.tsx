@@ -3,6 +3,7 @@ import { EntityViewer } from '../../app/features/entityViewer/EntityViewer';
 import { SfConnection } from '../../foundations/sfConnections';
 import { EntityDefinition } from '../../generated';
 import { CellBase, Matrix } from 'react-spreadsheet';
+import { Grid } from '@mui/material';
 
 const ENTITY_VIEW_SYMBOLE = Symbol('EntityView');
 const EntityView = () => {
@@ -11,6 +12,7 @@ const EntityView = () => {
   const [fieldInformationsByObject, setFieldInformationsByObject] = useState<{
     [key: string]: Matrix<CellBase>;
   }>({});
+  const [selectedObjectApiName, setSelectedObjectApiName] = useState<string>('');
 
   useEffect(() => {
     const sfConn = new SfConnection();
@@ -76,12 +78,25 @@ const EntityView = () => {
     return <div>domainが有効ではありません．</div>;
   }
 
+  const onSelectObject = (objectApiName: string) => {
+    setSelectedObjectApiName(objectApiName);
+  };
+
   return (
     <div className="h-screen w-screen">
-      <EntityViewer
-        objectInformations={objectInformations}
-        fieldInformationsByObject={fieldInformationsByObject}
-      />
+      <Grid container className="p-2">
+        <Grid xs={12}>
+          <div className="flex justify-center mt-2 text-base">Entity Viewer</div>
+        </Grid>
+
+        <Grid xs={12}>
+          <EntityViewer
+            objectInformations={objectInformations}
+            fieldInformationsByObject={fieldInformationsByObject}
+            onSelect={onSelectObject}
+          />
+        </Grid>
+      </Grid>
     </div>
   );
 };

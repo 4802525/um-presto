@@ -50,15 +50,16 @@ export const EntityViewer: FC<EntityViewerProps> = ({
     new EmptySelection()
   );
   function onSelectObject(active: Point) {
-    setObjectSelection(new EntireRowsSelection(active.row, active.row));
-    onSelect?.(selectedObjectName(objectSelection));
+    const selection = new EntireRowsSelection(active.row, active.row);
+    setObjectSelection(selection);
+    onSelect?.(selectedObjectName(selection));
   }
 
   function setDefaultObject() {
     const selection =
       filterdObjects.length > 0 ? new EntireRowsSelection(0, 0) : new EmptySelection();
     setObjectSelection(selection);
-    onSelect?.(selectedObjectName(objectSelection));
+    onSelect?.(selectedObjectName(selection));
   }
 
   function selectedObjectName(objectSelection: EntireRowsSelection | EmptySelection) {

@@ -1,19 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { EntityViewer } from '../../app/features/entityViewer/EntityViewer';
 import { SfConnection } from '../../foundations/sfConnections';
 import { EntityDefinition } from '../../generated';
 import { CellBase, Matrix } from 'react-spreadsheet';
-import { Grid } from '@mui/material';
+import { Grid, IconButton } from '@mui/material';
+import ViewSidebarRoundedIcon from '@mui/icons-material/ViewSidebarRounded';
+import SecurityRoundedIcon from '@mui/icons-material/SecurityRounded';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 const ENTITY_VIEW_SYMBOLE = Symbol('EntityView');
 const EntityView = () => {
-  const [sfConnection, setSfConnection] = useState<SfConnection | undefined>(undefined);
-  const [objectInformations, setObjectInfomations] = useState<Matrix<CellBase>>([]);
-  const [fieldInformationsByObject, setFieldInformationsByObject] = useState<{
-    [key: string]: Matrix<CellBase>;
-  }>({});
-  const [selectedObjectApiName, setSelectedObjectApiName] = useState<string>('');
-
   useEffect(() => {
     const sfConn = new SfConnection();
     const args = new URLSearchParams(location.search.slice(1));
@@ -26,6 +23,16 @@ const EntityView = () => {
       setSfConnection(sfConn);
     });
   }, [ENTITY_VIEW_SYMBOLE]);
+
+  // salesforce
+  const [sfConnection, setSfConnection] = useState<SfConnection | undefined>(undefined);
+
+  // EntityView
+  const [objectInformations, setObjectInfomations] = useState<Matrix<CellBase>>([]);
+  const [fieldInformationsByObject, setFieldInformationsByObject] = useState<{
+    [key: string]: Matrix<CellBase>;
+  }>({});
+  const [selectedObjectApiName, setSeletedObjectApiName] = useState<string>('');
 
   useEffect(() => {
     if (!sfConnection) {
@@ -74,13 +81,13 @@ const EntityView = () => {
     });
   }, [sfConnection]);
 
+  // object action
+  const [showPermissionSetMenu, setShowPermissionSetMenu] = useState<boolean>(false);
+  const permissionSetIconRef = useRef(null);
+
   if (!sfConnection) {
     return <div>domainが有効ではありません．</div>;
   }
-
-  const onSelectObject = (objectApiName: string) => {
-    setSelectedObjectApiName(objectApiName);
-  };
 
   return (
     <div className="h-screen w-screen">
@@ -90,10 +97,68 @@ const EntityView = () => {
         </Grid>
 
         <Grid xs={12}>
+          <IconButton color="primary" disabled={!selectedObjectApiName} size="large">
+            <ViewSidebarRoundedIcon />
+          </IconButton>
+
+          <IconButton
+            id="permission-set-icon"
+            color="primary"
+            disabled={!selectedObjectApiName}
+            size="large"
+            aria-controls="permission-set-menu"
+            aria-haspopup="true"
+            aria-expanded={showPermissionSetMenu}
+            ref={permissionSetIconRef}
+            onClick={() => {
+              setShowPermissionSetMenu(true);
+            }}
+          >
+            <SecurityRoundedIcon />
+          </IconButton>
+
+          <Menu
+            id="permission-set-menu"
+            open={showPermissionSetMenu}
+            anchorEl={permissionSetIconRef.current}
+            MenuListProps={{
+              'aria-labelledby': 'permission-set-icon',
+            }}
+            onClose={() => {
+              setShowPermissionSetMenu(false);
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                setShowPermissionSetMenu(false);
+              }}
+            >
+              Product Admin
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setShowPermissionSetMenu(false);
+              }}
+            >
+              Scm Admin
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setShowPermissionSetMenu(false);
+              }}
+            >
+              Wms Admin
+            </MenuItem>
+          </Menu>
+        </Grid>
+
+        <Grid xs={12}>
           <EntityViewer
             objectInformations={objectInformations}
             fieldInformationsByObject={fieldInformationsByObject}
-            onSelect={onSelectObject}
+            onSelect={(objectApiName: string) => {
+              setSeletedObjectApiName(objectApiName);
+            }}
           />
         </Grid>
       </Grid>

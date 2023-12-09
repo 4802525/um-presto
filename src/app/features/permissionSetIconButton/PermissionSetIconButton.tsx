@@ -10,7 +10,7 @@ interface PermissionSetIconButtonProps {
 }
 
 // %2F → /
-const PERMISSION_SET_PATH = 'lightning/setup/PermSets/page?address=%2F';
+const PERMISSION_SET_PATH = 'lightning/setup/PermSets/page?address=';
 export const PermissionSetIconButton: FC<PermissionSetIconButtonProps> = ({
   instanceUrl,
   entity,
@@ -24,10 +24,7 @@ export const PermissionSetIconButton: FC<PermissionSetIconButtonProps> = ({
   }, [instanceUrl]);
 
   const entityPermissionPath = useMemo(() => {
-    // %3F → ?
-    // %3D → =
-    // %26 → &
-    return `%3Fs%3DEntityPermissions%26o%3D${entity?.durableId ?? ''}`;
+    return `?s=EntityPermissions&o=${entity?.durableId ?? ''}`;
   }, [entity]);
 
   return (
@@ -61,15 +58,24 @@ export const PermissionSetIconButton: FC<PermissionSetIconButtonProps> = ({
       >
         <MenuItem disabled>{entity?.label}</MenuItem>
         {permissionSets.map((permissionSet) => {
+          // エンコードしないと正常に遷移できない
+          const param = encodeURIComponent(`/${permissionSet?.id ?? ''}${entityPermissionPath}`);
+          const url = `${permissionSetUrl}${param}`;
           return (
             <MenuItem
               key={permissionSet.id}
               onClick={() => {
-                const url = `${permissionSetUrl}${permissionSet?.id ?? ''}${entityPermissionPath}`;
                 window.open(url, '_blank');
               }}
             >
-              {permissionSet?.label}
+              <a
+                href={url}
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
+              >
+                {permissionSet?.label}
+              </a>
             </MenuItem>
           );
         })}

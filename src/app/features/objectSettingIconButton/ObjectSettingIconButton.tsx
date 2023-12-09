@@ -10,6 +10,7 @@ interface ObjectSettingIconButtonProps {
   layouts: Layout[];
 }
 
+const CUSTOM_METADATA_PATH = '/lightning/setup/CustomMetadata/page?address=';
 const OBJECT_MANAGER_PATH = 'lightning/setup/ObjectManager';
 
 export const ObjectSettingIconButton: FC<ObjectSettingIconButtonProps> = ({
@@ -20,13 +21,50 @@ export const ObjectSettingIconButton: FC<ObjectSettingIconButtonProps> = ({
   const [showObjectSettingMenu, setShowObjectSettingMenu] = useState<boolean>(false);
   const objectSettingIconRef = useRef(null);
 
-  const objectUrl = useMemo(() => {
-    return `${instanceUrl}/${OBJECT_MANAGER_PATH}/${entity?.durableId ?? ''}`;
-  }, [instanceUrl, entity]);
-
   const objectLayouts = useMemo(() => {
     return layouts.filter((layout) => layout.EntityDefinitionId === entity?.durableId);
   }, [entity, layouts]);
+
+  const detailPages = useMemo(() => {
+    if (entity?.isCustomSetting) {
+      return [];
+    }
+
+    if (entity?.qualifiedApiName?.endsWith('__mdt')) {
+      const metadataUrl = `${instanceUrl}/${CUSTOM_METADATA_PATH}`;
+      const customMetadataDetailParam = `/${entity?.durableId ?? ''}?setupid=CustomMetadata`;
+      return [
+        {
+          label: 'カスタムメタデータ詳細',
+          url: `${metadataUrl}${encodeURIComponent(customMetadataDetailParam)}`,
+        },
+      ];
+    }
+
+    const objectUrl = `${instanceUrl}/${OBJECT_MANAGER_PATH}/${entity?.durableId ?? ''}`;
+    return [
+      {
+        label: 'オブジェクト詳細',
+        url: `${objectUrl}/Details/view`,
+      },
+      {
+        label: 'ページレイアウト割当',
+        url: `${objectUrl}/PageLayouts/viewPageAssignments`,
+      },
+      {
+        label: '新規ボタン上書き',
+        url: `${objectUrl}/ButtonsLinksActions/New/editStandardAction`,
+      },
+      {
+        label: '編集ボタン上書き',
+        url: `${objectUrl}/ButtonsLinksActions/Edit/editStandardAction`,
+      },
+      ...objectLayouts.map((layout) => ({
+        label: layout.Name,
+        url: `${objectUrl}/PageLayouts/${layout.Id}/view`,
+      })),
+    ];
+  }, [instanceUrl, entity, objectLayouts]);
 
   return (
     <>
@@ -55,48 +93,23 @@ export const ObjectSettingIconButton: FC<ObjectSettingIconButtonProps> = ({
         }}
       >
         <MenuItem disabled>{entity?.label}</MenuItem>
-        <MenuItem
-          onClick={() => {
-            const url = `${objectUrl}/Details/view`;
-            window.open(url, '_blank');
-          }}
-        >
-          オブジェクト詳細
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            const url = `${objectUrl}/PageLayouts/viewPageAssignments`;
-            window.open(url, '_blank');
-          }}
-        >
-          ページレイアウト割当
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            const url = `${objectUrl}/ButtonsLinksActions/New/editStandardAction`;
-            window.open(url, '_blank');
-          }}
-        >
-          新規ボタン上書き
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            const url = `${objectUrl}/ButtonsLinksActions/Edit/editStandardAction`;
-            window.open(url, '_blank');
-          }}
-        >
-          編集ボタン上書き
-        </MenuItem>
-        {objectLayouts.map((layout) => {
+
+        {detailPages.map((page, index) => {
           return (
             <MenuItem
-              key={layout.Id}
+              key={index}
               onClick={() => {
-                const url = `${objectUrl}/PageLayouts/${layout.Id}/view`;
-                window.open(url, '_blank');
+                window.open(page.url, '_blank');
               }}
             >
-              {layout.Name}
+              <a
+                href={page.url}
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
+              >
+                {page.label}
+              </a>
             </MenuItem>
           );
         })}

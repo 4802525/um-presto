@@ -9,7 +9,6 @@ interface PermissionSetIconButtonProps {
   permissionSets: PermissionSet[];
 }
 
-// %2F → /
 const PERMISSION_SET_PATH = 'lightning/setup/PermSets/page?address=';
 export const PermissionSetIconButton: FC<PermissionSetIconButtonProps> = ({
   instanceUrl,
@@ -25,6 +24,10 @@ export const PermissionSetIconButton: FC<PermissionSetIconButtonProps> = ({
 
   const entityPermissionPath = useMemo(() => {
     return `?s=EntityPermissions&o=${entity?.durableId ?? ''}`;
+  }, [entity]);
+
+  const isCustomMetadata = useMemo(() => {
+    return entity?.qualifiedApiName?.endsWith('__mdt');
   }, [entity]);
 
   return (
@@ -57,28 +60,29 @@ export const PermissionSetIconButton: FC<PermissionSetIconButtonProps> = ({
         }}
       >
         <MenuItem disabled>{entity?.label}</MenuItem>
-        {permissionSets.map((permissionSet) => {
-          // エンコードしないと正常に遷移できない
-          const param = encodeURIComponent(`/${permissionSet?.id ?? ''}${entityPermissionPath}`);
-          const url = `${permissionSetUrl}${param}`;
-          return (
-            <MenuItem
-              key={permissionSet.id}
-              onClick={() => {
-                window.open(url, '_blank');
-              }}
-            >
-              <a
-                href={url}
-                onClick={(e) => {
-                  e.preventDefault();
+        {!isCustomMetadata &&
+          permissionSets.map((permissionSet) => {
+            // エンコードしないと正常に遷移できない
+            const param = encodeURIComponent(`/${permissionSet?.id ?? ''}${entityPermissionPath}`);
+            const url = `${permissionSetUrl}${param}`;
+            return (
+              <MenuItem
+                key={permissionSet.id}
+                onClick={() => {
+                  window.open(url, '_blank');
                 }}
               >
-                {permissionSet?.label}
-              </a>
-            </MenuItem>
-          );
-        })}
+                <a
+                  href={url}
+                  onClick={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  {permissionSet?.label}
+                </a>
+              </MenuItem>
+            );
+          })}
       </Menu>
     </>
   );

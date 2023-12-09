@@ -8,7 +8,7 @@ interface FieldViewerProps {
   fieldInformations: Matrix<CellBase>;
 }
 
-// 2000件を超える場合は表示のレスポンスに影響する
+// 1000件を超える場合は表示のレスポンスに影響する
 const LIMIT_DISPLAY = 1000;
 
 const COLUMNS = ['オブジェクト名', 'Api参照名(オブジェクト)', '項目名', 'Api参照名(項目)', '型'];
@@ -41,7 +41,7 @@ export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
         </Grid>
         <Grid xs={10} className="p-2">
           {tooManyFields && (
-            <div className="flex mt-4 text-base">{`${LIMIT_DISPLAY}以下となるように絞り込んでください．`}</div>
+            <div className="flex mt-4 text-base">{`${LIMIT_DISPLAY}件以下となるように絞り込んでください`}</div>
           )}
         </Grid>
         <Grid xs={12} style={{ height: 500, overflow: 'auto' }}>

@@ -76,7 +76,7 @@ export default class EntityViewService {
   static async retrieveEntityDefinitions() {
     return EntityDefinition.retrieve((f) => ({
       select: [
-        ...f.select('id', 'qualifiedApiName', 'label', 'detailUrl', 'durableId'),
+        ...f.select('id', 'qualifiedApiName', 'label', 'detailUrl', 'durableId', 'isCustomSetting'),
         f.subQuery('fields', (subF) => ({
           select: subF.select('id', 'qualifiedApiName', 'label', 'dataType'),
         })),

@@ -1,0 +1,1 @@
+export { ObjectSettingIconButton } from './ObjectSettingIconButton';

@@ -2,6 +2,7 @@ import { setDefaultConfig } from 'ts-force';
 import { Session } from './Session';
 
 export class SfConnection {
+  instanceUrl: string | undefined;
   async getSession(sfHost: string) {
     const message = await new Promise<Session | null>((resolve) =>
       chrome.runtime.sendMessage({ message: 'getSession', sfHost }, resolve)
@@ -18,8 +19,9 @@ export class SfConnection {
       return;
     }
 
+    this.instanceUrl = `https://${instanceHostName}`;
     setDefaultConfig({
-      instanceUrl: `https://${instanceHostName}`,
+      instanceUrl: this.instanceUrl,
       accessToken: sessionId,
     });
   }

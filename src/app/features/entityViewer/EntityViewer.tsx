@@ -49,26 +49,26 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   const [objectSelection, setObjectSelection] = useState<EntireRowsSelection | EmptySelection>(
     new EmptySelection()
   );
-  function onSelectObject(active: Point) {
+  const onSelectObject = (active: Point) => {
     const selection = new EntireRowsSelection(active.row, active.row);
     setObjectSelection(selection);
     onSelect?.(selectedObjectName(selection));
-  }
+  };
 
-  function setDefaultObject() {
+  const setDefaultObject = () => {
     const selection =
       filterdObjects.length > 0 ? new EntireRowsSelection(0, 0) : new EmptySelection();
     setObjectSelection(selection);
     onSelect?.(selectedObjectName(selection));
-  }
+  };
 
-  function selectedObjectName(objectSelection: EntireRowsSelection | EmptySelection) {
+  const selectedObjectName = (objectSelection: EntireRowsSelection | EmptySelection) => {
     if (isEmptySelection(objectSelection)) {
       return '';
     }
 
     return filterdObjects[objectSelection.start]?.[1]?.value;
-  }
+  };
 
   // 項目側の操作
   const filterdFields = useMemo(() => {

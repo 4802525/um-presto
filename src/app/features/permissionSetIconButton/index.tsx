@@ -1,0 +1,1 @@
+export { PermissionSetIconButton } from './PermissionSetIconButton';

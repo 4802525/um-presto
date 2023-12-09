@@ -93,7 +93,7 @@ export const EntityViewer: FC<EntityViewerProps> = ({
               }}
             />
           </Grid>
-          <Grid xs={12} style={{ height: 500, overflow: 'auto' }}>
+          <Grid xs={12} style={{ height: 550, overflow: 'auto' }}>
             <Spreadsheet
               data={filterdObjects}
               columnLabels={OBJECT_COLUMNS}
@@ -112,7 +112,7 @@ export const EntityViewer: FC<EntityViewerProps> = ({
               onChange={(event) => setFieldFilteringText(event.target.value)}
             />
           </Grid>
-          <Grid xs={12} style={{ height: 500, overflow: 'auto' }}>
+          <Grid xs={12} style={{ height: 550, overflow: 'auto' }}>
             <Spreadsheet data={filterdFields} columnLabels={FIELD_COLUMNS} />
           </Grid>
         </Grid>

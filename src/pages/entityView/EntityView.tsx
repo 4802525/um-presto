@@ -89,27 +89,6 @@ const EntityView = () => {
           <div className="flex justify-center mt-2 text-base">Entity Viewer</div>
         </Grid>
 
-        <Grid xs={12}>
-          <ObjectSettingIconButton
-            instanceUrl={sfConnection.instanceUrl ?? ''}
-            entity={selectedEntity}
-            layouts={layouts}
-          />
-
-          <PermissionSetIconButton
-            instanceUrl={sfConnection.instanceUrl ?? ''}
-            entity={selectedEntity}
-            permissionSets={filterdPermissionSets}
-          />
-
-          <FormControlLabel
-            className="px-3"
-            control={<Checkbox checked={onlyUm} onChange={() => setOnlyUm(!onlyUm)} />}
-            disabled={tab === 1}
-            label="UMのみ"
-          />
-        </Grid>
-
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={tab}
@@ -125,18 +104,44 @@ const EntityView = () => {
           </Tabs>
         </Box>
 
-        <Grid xs={12}>
-          {tab === 0 && (
-            <EntityViewer
-              objectInformations={objectInformations}
-              fieldInformationsByObject={fieldInformationsByObject}
-              onSelect={(objectApiName: string) => {
-                setSeletedObjectApiName(objectApiName);
-              }}
-            />
-          )}
-          {tab === 1 && <FieldViewer fieldInformations={fieldInformations} />}
-        </Grid>
+        {tab === 0 && (
+          <>
+            <Grid xs={12}>
+              <ObjectSettingIconButton
+                instanceUrl={sfConnection.instanceUrl ?? ''}
+                entity={selectedEntity}
+                layouts={layouts}
+              />
+
+              <PermissionSetIconButton
+                instanceUrl={sfConnection.instanceUrl ?? ''}
+                entity={selectedEntity}
+                permissionSets={filterdPermissionSets}
+              />
+
+              <FormControlLabel
+                className="px-3"
+                control={<Checkbox checked={onlyUm} onChange={() => setOnlyUm(!onlyUm)} />}
+                label="UMのみ"
+              />
+            </Grid>
+            <Grid xs={12}>
+              <EntityViewer
+                objectInformations={objectInformations}
+                fieldInformationsByObject={fieldInformationsByObject}
+                onSelect={(objectApiName: string) => {
+                  setSeletedObjectApiName(objectApiName);
+                }}
+              />
+            </Grid>
+          </>
+        )}
+
+        {tab === 1 && (
+          <Grid xs={12}>
+            <FieldViewer fieldInformations={fieldInformations} />
+          </Grid>
+        )}
       </Grid>
     </div>
   );

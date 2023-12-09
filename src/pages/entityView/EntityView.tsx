@@ -1,15 +1,23 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { EntityViewer } from '../../app/features/entityViewer/EntityViewer';
 import { SfConnection } from '../../foundations/sfConnections';
 import { EntityDefinition } from '../../generated';
 import { CellBase, Matrix } from 'react-spreadsheet';
-import { Grid, IconButton } from '@mui/material';
+import { Box, Grid, IconButton, Tab, Tabs } from '@mui/material';
 import ViewSidebarRoundedIcon from '@mui/icons-material/ViewSidebarRounded';
 import SecurityRoundedIcon from '@mui/icons-material/SecurityRounded';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { FieldViewer } from '../../app/features/fieldViewer';
 
 const ENTITY_VIEW_SYMBOLE = Symbol('EntityView');
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
 const EntityView = () => {
   useEffect(() => {
     const sfConn = new SfConnection();
@@ -27,12 +35,50 @@ const EntityView = () => {
   // salesforce
   const [sfConnection, setSfConnection] = useState<SfConnection | undefined>(undefined);
 
-  // EntityView
-  const [objectInformations, setObjectInfomations] = useState<Matrix<CellBase>>([]);
-  const [fieldInformationsByObject, setFieldInformationsByObject] = useState<{
-    [key: string]: Matrix<CellBase>;
-  }>({});
+  // Entity
+  const [entityDefinitions, setEntityDefinitions] = useState<EntityDefinition[]>([]);
+  const [objectInformations, fieldInformationsByObject, fieldInformations] = useMemo(() => {
+    const objectInfos = entityDefinitions.map((entity) => [
+      { value: entity.label, readOnly: true },
+      { value: entity.qualifiedApiName, readOnly: true },
+    ]);
+
+    const fieldInfosBuilder = new Map<string, Matrix<CellBase>>();
+    for (const entity of entityDefinitions) {
+      if (!entity.qualifiedApiName) {
+        continue;
+      }
+
+      fieldInfosBuilder.set(
+        entity.qualifiedApiName,
+        entity.fields?.map((field) => [
+          { value: field.label, readOnly: true },
+          { value: field.qualifiedApiName, readOnly: true },
+          { value: field.dataType, readOnly: true },
+        ]) ?? []
+      );
+    }
+
+    const fieldInfos = entityDefinitions.flatMap((entity) => {
+      return (
+        entity.fields?.map((field) => [
+          { value: entity.label, readOnly: true },
+          { value: entity.qualifiedApiName, readOnly: true },
+          { value: field.label, readOnly: true },
+          { value: field.qualifiedApiName, readOnly: true },
+          { value: field.dataType, readOnly: true },
+        ]) ?? []
+      );
+    });
+
+    return [objectInfos, Object.fromEntries(fieldInfosBuilder), fieldInfos];
+  }, [entityDefinitions]);
+
+  // Action
   const [selectedObjectApiName, setSeletedObjectApiName] = useState<string>('');
+
+  // tab
+  const [tab, setTab] = useState<number>(0);
 
   useEffect(() => {
     if (!sfConnection) {
@@ -55,29 +101,7 @@ const EntityView = () => {
       ],
       orderBy: [{ field: f.select('label') }],
     })).then((entities) => {
-      setObjectInfomations(
-        entities.map((entity) => [
-          { value: entity.label, readOnly: true },
-          { value: entity.qualifiedApiName, readOnly: true },
-        ])
-      );
-
-      const fieldInfosBuilder = new Map<string, Matrix<CellBase>>();
-      for (const entity of entities) {
-        if (!entity.qualifiedApiName) {
-          continue;
-        }
-
-        fieldInfosBuilder.set(
-          entity.qualifiedApiName,
-          entity.fields?.map((field) => [
-            { value: field.label, readOnly: true },
-            { value: field.qualifiedApiName, readOnly: true },
-            { value: field.dataType, readOnly: true },
-          ]) ?? []
-        );
-      }
-      setFieldInformationsByObject(Object.fromEntries(fieldInfosBuilder));
+      setEntityDefinitions(entities);
     });
   }, [sfConnection]);
 
@@ -152,14 +176,31 @@ const EntityView = () => {
           </Menu>
         </Grid>
 
-        <Grid xs={12}>
-          <EntityViewer
-            objectInformations={objectInformations}
-            fieldInformationsByObject={fieldInformationsByObject}
-            onSelect={(objectApiName: string) => {
-              setSeletedObjectApiName(objectApiName);
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs
+            value={tab}
+            onChange={(_, value) => {
+              setSeletedObjectApiName('');
+              setTab(value);
             }}
-          />
+            aria-label="tab"
+          >
+            <Tab label="オブジェクト" {...a11yProps(0)} />
+            <Tab label="項目" {...a11yProps(1)} />
+          </Tabs>
+        </Box>
+
+        <Grid xs={12}>
+          {tab === 0 && (
+            <EntityViewer
+              objectInformations={objectInformations}
+              fieldInformationsByObject={fieldInformationsByObject}
+              onSelect={(objectApiName: string) => {
+                setSeletedObjectApiName(objectApiName);
+              }}
+            />
+          )}
+          {tab === 1 && <FieldViewer fieldInformations={fieldInformations} />}
         </Grid>
       </Grid>
     </div>

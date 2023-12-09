@@ -42,7 +42,7 @@ export const EntityViewer: FC<EntityViewerProps> = ({
 
   const filterdObjects = useMemo(() => {
     return objectInformations.filter((object) => {
-      return object.some((o) => o?.value.includes(objectFilteringText));
+      return object.some((o) => o?.value?.includes(objectFilteringText));
     });
   }, [objectInformations, objectFilteringText]);
 
@@ -74,7 +74,7 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   const filterdFields = useMemo(() => {
     const fields = fieldInformationsByObject[selectedObjectName(objectSelection)] ?? [];
     return fields.filter((field) => {
-      return field.some((f) => f?.value.includes(fieldFilteringText));
+      return field.some((f) => f?.value?.includes(fieldFilteringText));
     });
   }, [fieldInformationsByObject, filterdObjects, objectSelection, fieldFilteringText]);
 

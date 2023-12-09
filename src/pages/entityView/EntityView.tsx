@@ -3,7 +3,7 @@ import { EntityViewer } from '../../app/features/entityViewer/EntityViewer';
 import { SfConnection } from '../../foundations/sfConnections';
 import { EntityDefinition } from '../../generated';
 import { CellBase, Matrix } from 'react-spreadsheet';
-import { Box, Grid, IconButton, Tab, Tabs } from '@mui/material';
+import { Box, Checkbox, FormControlLabel, Grid, IconButton, Tab, Tabs } from '@mui/material';
 import ViewSidebarRoundedIcon from '@mui/icons-material/ViewSidebarRounded';
 import SecurityRoundedIcon from '@mui/icons-material/SecurityRounded';
 import Menu from '@mui/material/Menu';
@@ -37,45 +37,67 @@ const EntityView = () => {
 
   // Entity
   const [entityDefinitions, setEntityDefinitions] = useState<EntityDefinition[]>([]);
+  // Action
+  const [selectedObjectApiName, setSeletedObjectApiName] = useState<string>('');
+  const [onlyUm, setOnlyUm] = useState<boolean>(true);
   const [objectInformations, fieldInformationsByObject, fieldInformations] = useMemo(() => {
-    const objectInfos = entityDefinitions.map((entity) => [
+    const entityDefs = entityDefinitions.filter(
+      (entity) =>
+        !onlyUm ||
+        entity?.qualifiedApiName?.includes('snps_um') ||
+        entity?.qualifiedApiName === 'Account'
+    );
+    const objectInfos = entityDefs.map((entity) => [
       { value: entity.label, readOnly: true },
       { value: entity.qualifiedApiName, readOnly: true },
     ]);
 
     const fieldInfosBuilder = new Map<string, Matrix<CellBase>>();
-    for (const entity of entityDefinitions) {
+    for (const entity of entityDefs) {
       if (!entity.qualifiedApiName) {
         continue;
       }
 
       fieldInfosBuilder.set(
         entity.qualifiedApiName,
-        entity.fields?.map((field) => [
-          { value: field.label, readOnly: true },
-          { value: field.qualifiedApiName, readOnly: true },
-          { value: field.dataType, readOnly: true },
-        ]) ?? []
+        entity.fields
+          ?.filter(
+            (field) =>
+              !onlyUm ||
+              field?.qualifiedApiName?.includes('snps_um') ||
+              field?.qualifiedApiName === 'Id' ||
+              field?.qualifiedApiName === 'Name'
+          )
+          .map((field) => [
+            { value: field.label, readOnly: true },
+            { value: field.qualifiedApiName, readOnly: true },
+            { value: field.dataType, readOnly: true },
+          ]) ?? []
       );
     }
 
-    const fieldInfos = entityDefinitions.flatMap((entity) => {
+    const fieldInfos = entityDefs.flatMap((entity) => {
       return (
-        entity.fields?.map((field) => [
-          { value: entity.label, readOnly: true },
-          { value: entity.qualifiedApiName, readOnly: true },
-          { value: field.label, readOnly: true },
-          { value: field.qualifiedApiName, readOnly: true },
-          { value: field.dataType, readOnly: true },
-        ]) ?? []
+        entity.fields
+          ?.filter(
+            (field) =>
+              !onlyUm ||
+              field?.qualifiedApiName?.includes('snps_um') ||
+              field?.qualifiedApiName === 'Id' ||
+              field?.qualifiedApiName === 'Name'
+          )
+          .map((field) => [
+            { value: entity.label, readOnly: true },
+            { value: entity.qualifiedApiName, readOnly: true },
+            { value: field.label, readOnly: true },
+            { value: field.qualifiedApiName, readOnly: true },
+            { value: field.dataType, readOnly: true },
+          ]) ?? []
       );
     });
 
     return [objectInfos, Object.fromEntries(fieldInfosBuilder), fieldInfos];
-  }, [entityDefinitions]);
-
-  // Action
-  const [selectedObjectApiName, setSeletedObjectApiName] = useState<string>('');
+  }, [entityDefinitions, onlyUm]);
 
   // tab
   const [tab, setTab] = useState<number>(0);
@@ -174,6 +196,12 @@ const EntityView = () => {
               Wms Admin
             </MenuItem>
           </Menu>
+
+          <FormControlLabel
+            control={<Checkbox checked={onlyUm} onChange={() => setOnlyUm(!onlyUm)} />}
+            disabled={tab === 1}
+            label="UMのみ"
+          />
         </Grid>
 
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -181,6 +209,7 @@ const EntityView = () => {
             value={tab}
             onChange={(_, value) => {
               setSeletedObjectApiName('');
+              setOnlyUm(true);
               setTab(value);
             }}
             aria-label="tab"

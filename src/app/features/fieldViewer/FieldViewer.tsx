@@ -9,7 +9,7 @@ interface FieldViewerProps {
 }
 
 // 2000件を超える場合は表示のレスポンスに影響する
-const LIMIT_DISPLAY = 2000;
+const LIMIT_DISPLAY = 1000;
 
 const COLUMNS = ['オブジェクト名', 'Api参照名(オブジェクト)', '項目名', 'Api参照名(項目)', '型'];
 

@@ -63,7 +63,14 @@ export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
             <div className="flex text-base">{`${LIMIT_DISPLAY}件以下となるように絞り込んでください`}</div>
           )}
         </Grid>
-        <Grid xs={12} style={{ height: 600, overflow: 'auto' }}>
+        <Grid
+          style={{
+            maxWidth: '100%',
+            width: 'fit-content',
+            height: `calc(100vh - 150px)`,
+            overflow: 'auto',
+          }}
+        >
           <Spreadsheet data={tooManyFields ? [] : filterdFields} columnLabels={COLUMNS} />
         </Grid>
       </Grid>

@@ -81,7 +81,7 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   return (
     <>
       <Grid container spacing={1}>
-        <Grid xs={4}>
+        <Grid xs={5}>
           <Grid xs={12}>
             <TextField
               label="オブジェクト絞り込み"
@@ -93,7 +93,15 @@ export const EntityViewer: FC<EntityViewerProps> = ({
               }}
             />
           </Grid>
-          <Grid xs={12} style={{ height: 550, overflow: 'auto' }}>
+          <Grid
+            xs={12}
+            style={{
+              maxWidth: '100%',
+              width: 'fit-content',
+              height: `calc(100vh - 200px)`,
+              overflow: 'auto',
+            }}
+          >
             <Spreadsheet
               data={filterdObjects}
               columnLabels={OBJECT_COLUMNS}
@@ -103,7 +111,7 @@ export const EntityViewer: FC<EntityViewerProps> = ({
           </Grid>
         </Grid>
 
-        <Grid xs={8}>
+        <Grid xs={7}>
           <Grid xs={12} className="p-2">
             <TextField
               label="項目絞り込み"
@@ -112,7 +120,15 @@ export const EntityViewer: FC<EntityViewerProps> = ({
               onChange={(event) => setFieldFilteringText(event.target.value)}
             />
           </Grid>
-          <Grid xs={12} style={{ height: 550, overflow: 'auto' }}>
+          <Grid
+            xs={12}
+            style={{
+              maxWidth: '100%',
+              width: 'fit-content',
+              height: `calc(100vh - 200px)`,
+              overflow: 'auto',
+            }}
+          >
             <Spreadsheet data={filterdFields} columnLabels={FIELD_COLUMNS} />
           </Grid>
         </Grid>

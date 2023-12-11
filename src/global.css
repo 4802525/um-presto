@@ -3,3 +3,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.Spreadsheet__cell--readonly {
+  color: rgb(57, 57, 57) !important;
+}

@@ -92,6 +92,7 @@ const EntityView = () => {
         <Tabs
           value={tab}
           onChange={(_, value) => {
+            setSeletedObjectApiName('');
             setOnlyUm(true);
             setTab(value);
           }}
@@ -102,38 +103,44 @@ const EntityView = () => {
         </Tabs>
       </Box>
 
-      <Grid xs={12} className={tab === 0 ? 'visible' : 'invisible'}>
-        <ObjectSettingIconButton
-          instanceUrl={sfConnection.instanceUrl ?? ''}
-          entity={selectedEntity}
-          layouts={layouts}
-        />
+      {tab === 0 && (
+        <>
+          <Grid xs={12}>
+            <ObjectSettingIconButton
+              instanceUrl={sfConnection.instanceUrl ?? ''}
+              entity={selectedEntity}
+              layouts={layouts}
+            />
 
-        <PermissionSetIconButton
-          instanceUrl={sfConnection.instanceUrl ?? ''}
-          entity={selectedEntity}
-          permissionSets={filterdPermissionSets}
-        />
+            <PermissionSetIconButton
+              instanceUrl={sfConnection.instanceUrl ?? ''}
+              entity={selectedEntity}
+              permissionSets={filterdPermissionSets}
+            />
 
-        <FormControlLabel
-          className="px-3"
-          control={<Checkbox checked={onlyUm} onChange={() => setOnlyUm(!onlyUm)} />}
-          label="UMのみ"
-        />
-      </Grid>
-      <Grid xs={12} className={tab === 0 ? 'visible' : 'invisible'}>
-        <EntityViewer
-          objectInformations={objectInformations}
-          fieldInformationsByObject={fieldInformationsByObject}
-          onSelect={(objectApiName: string) => {
-            setSeletedObjectApiName(objectApiName);
-          }}
-        />
-      </Grid>
+            <FormControlLabel
+              className="px-3"
+              control={<Checkbox checked={onlyUm} onChange={() => setOnlyUm(!onlyUm)} />}
+              label="UMのみ"
+            />
+          </Grid>
+          <Grid xs={12}>
+            <EntityViewer
+              objectInformations={objectInformations}
+              fieldInformationsByObject={fieldInformationsByObject}
+              onSelect={(objectApiName: string) => {
+                setSeletedObjectApiName(objectApiName);
+              }}
+            />
+          </Grid>
+        </>
+      )}
 
-      <Grid xs={12} className={tab === 1 ? 'visible' : 'invisible'}>
-        <FieldViewer fieldInformations={fieldInformations} />
-      </Grid>
+      {tab === 1 && (
+        <Grid xs={12}>
+          <FieldViewer fieldInformations={fieldInformations} />
+        </Grid>
+      )}
     </Grid>
   );
 };

@@ -1,6 +1,6 @@
 import { crx } from '@crxjs/vite-plugin';
 import react from '@vitejs/plugin-react';
-import { join, resolve } from 'path';
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import manifest from './src/manifest';
 import { globSync } from 'glob'; //ワイルドカードを使って各ファイルの名前を取得し一括で登録するため
@@ -8,7 +8,6 @@ import { fileURLToPath } from 'node:url'; //上記の実行時にURLをpathに�
 
 const inputPagesHtmlArray = globSync(['src/pages/**/*.html'], { ignore: ['node_modules/**'] }).map(
   (file) => {
-    console.log(file.replace('.html', ''));
     return [file.replace('.html', ''), fileURLToPath(new URL(file, import.meta.url))];
   }
 );

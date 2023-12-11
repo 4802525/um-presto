@@ -96,21 +96,21 @@ export const ObjectSettingIconButton: FC<ObjectSettingIconButtonProps> = ({
 
         {detailPages.map((page, index) => {
           return (
-            <MenuItem
+            <a
               key={index}
-              onClick={() => {
-                window.open(page.url, '_blank');
+              href={page.url}
+              onClick={(e) => {
+                e.preventDefault();
               }}
             >
-              <a
-                href={page.url}
-                onClick={(e) => {
-                  e.preventDefault();
+              <MenuItem
+                onClick={() => {
+                  window.open(page.url, '_blank');
                 }}
               >
                 {page.label}
-              </a>
-            </MenuItem>
+              </MenuItem>
+            </a>
           );
         })}
       </Menu>

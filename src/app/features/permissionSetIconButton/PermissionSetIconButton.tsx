@@ -66,21 +66,21 @@ export const PermissionSetIconButton: FC<PermissionSetIconButtonProps> = ({
             const param = encodeURIComponent(`/${permissionSet?.id ?? ''}${entityPermissionPath}`);
             const url = `${permissionSetUrl}${param}`;
             return (
-              <MenuItem
+              <a
                 key={permissionSet.id}
-                onClick={() => {
-                  window.open(url, '_blank');
+                href={url}
+                onClick={(e) => {
+                  e.preventDefault();
                 }}
               >
-                <a
-                  href={url}
-                  onClick={(e) => {
-                    e.preventDefault();
+                <MenuItem
+                  onClick={() => {
+                    window.open(url, '_blank');
                   }}
                 >
                   {permissionSet?.label}
-                </a>
-              </MenuItem>
+                </MenuItem>
+              </a>
             );
           })}
       </Menu>

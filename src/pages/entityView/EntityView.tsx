@@ -83,67 +83,58 @@ const EntityView = () => {
   }
 
   return (
-    <div className="h-screen w-screen">
-      <Grid container className="p-2">
-        <Grid xs={12}>
-          <div className="flex justify-center mt-2 text-base">Entity Viewer</div>
-        </Grid>
-
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs
-            value={tab}
-            onChange={(_, value) => {
-              setSeletedObjectApiName('');
-              setOnlyUm(true);
-              setTab(value);
-            }}
-            aria-label="tab"
-          >
-            <Tab label="オブジェクト" {...a11yProps(0)} />
-            <Tab label="項目" {...a11yProps(1)} />
-          </Tabs>
-        </Box>
-
-        {tab === 0 && (
-          <>
-            <Grid xs={12}>
-              <ObjectSettingIconButton
-                instanceUrl={sfConnection.instanceUrl ?? ''}
-                entity={selectedEntity}
-                layouts={layouts}
-              />
-
-              <PermissionSetIconButton
-                instanceUrl={sfConnection.instanceUrl ?? ''}
-                entity={selectedEntity}
-                permissionSets={filterdPermissionSets}
-              />
-
-              <FormControlLabel
-                className="px-3"
-                control={<Checkbox checked={onlyUm} onChange={() => setOnlyUm(!onlyUm)} />}
-                label="UMのみ"
-              />
-            </Grid>
-            <Grid xs={12}>
-              <EntityViewer
-                objectInformations={objectInformations}
-                fieldInformationsByObject={fieldInformationsByObject}
-                onSelect={(objectApiName: string) => {
-                  setSeletedObjectApiName(objectApiName);
-                }}
-              />
-            </Grid>
-          </>
-        )}
-
-        {tab === 1 && (
-          <Grid xs={12}>
-            <FieldViewer fieldInformations={fieldInformations} />
-          </Grid>
-        )}
+    <Grid container className="p-2 h-screen w-screen">
+      <Grid xs={12}>
+        <div className="flex justify-center mt-2 text-base">Entity Viewer</div>
       </Grid>
-    </div>
+
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs
+          value={tab}
+          onChange={(_, value) => {
+            setOnlyUm(true);
+            setTab(value);
+          }}
+          aria-label="tab"
+        >
+          <Tab label="オブジェクト" {...a11yProps(0)} />
+          <Tab label="項目" {...a11yProps(1)} />
+        </Tabs>
+      </Box>
+
+      <Grid xs={12} className={tab === 0 ? 'visible' : 'invisible'}>
+        <ObjectSettingIconButton
+          instanceUrl={sfConnection.instanceUrl ?? ''}
+          entity={selectedEntity}
+          layouts={layouts}
+        />
+
+        <PermissionSetIconButton
+          instanceUrl={sfConnection.instanceUrl ?? ''}
+          entity={selectedEntity}
+          permissionSets={filterdPermissionSets}
+        />
+
+        <FormControlLabel
+          className="px-3"
+          control={<Checkbox checked={onlyUm} onChange={() => setOnlyUm(!onlyUm)} />}
+          label="UMのみ"
+        />
+      </Grid>
+      <Grid xs={12} className={tab === 0 ? 'visible' : 'invisible'}>
+        <EntityViewer
+          objectInformations={objectInformations}
+          fieldInformationsByObject={fieldInformationsByObject}
+          onSelect={(objectApiName: string) => {
+            setSeletedObjectApiName(objectApiName);
+          }}
+        />
+      </Grid>
+
+      <Grid xs={12} className={tab === 1 ? 'visible' : 'invisible'}>
+        <FieldViewer fieldInformations={fieldInformations} />
+      </Grid>
+    </Grid>
   );
 };
 

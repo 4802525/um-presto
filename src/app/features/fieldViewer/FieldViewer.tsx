@@ -12,7 +12,14 @@ interface FieldViewerProps {
 const LIMIT_DISPLAY = 1000;
 
 const OBJECT_COLUMN_SIZE = 2;
-const COLUMNS = ['オブジェクト名', 'Api参照名(オブジェクト)', '項目名', 'Api参照名(項目)', '型'];
+const COLUMNS = [
+  'オブジェクト名',
+  'Api参照名(オブジェクト)',
+  '項目名',
+  'Api参照名(項目)',
+  '型',
+  'マスターラベル',
+];
 
 export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
   FIELD_VIEW_SYMBOL;

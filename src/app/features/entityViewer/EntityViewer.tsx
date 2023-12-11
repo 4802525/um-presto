@@ -23,7 +23,7 @@ interface EntityViewerProps {
 }
 
 const OBJECT_COLUMNS = ['オブジェクト名', 'Api参照名'];
-const FIELD_COLUMNS = ['項目名', 'Api参照名', '型'];
+const FIELD_COLUMNS = ['項目名', 'Api参照名', '型', 'マスターラベル'];
 
 export const EntityViewer: FC<EntityViewerProps> = ({
   objectInformations,

@@ -41,6 +41,7 @@ export default class EntityViewService {
             { value: field.label, readOnly: true },
             { value: field.qualifiedApiName, readOnly: true },
             { value: field.dataType, readOnly: true },
+            { value: field.masterLabel, readOnly: true },
           ]) ?? []
       );
     }
@@ -62,6 +63,7 @@ export default class EntityViewService {
             { value: field.label, readOnly: true },
             { value: field.qualifiedApiName, readOnly: true },
             { value: field.dataType, readOnly: true },
+            { value: field.masterLabel, readOnly: true },
           ]) ?? []
       );
     });
@@ -78,7 +80,7 @@ export default class EntityViewService {
       select: [
         ...f.select('id', 'qualifiedApiName', 'label', 'detailUrl', 'durableId', 'isCustomSetting'),
         f.subQuery('fields', (subF) => ({
-          select: subF.select('id', 'qualifiedApiName', 'label', 'dataType'),
+          select: subF.select('id', 'qualifiedApiName', 'label', 'dataType', 'masterLabel'),
         })),
       ],
       where: [

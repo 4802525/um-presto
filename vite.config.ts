@@ -8,10 +8,15 @@ import { fileURLToPath } from 'node:url'; //上記の実行時にURLをpathに�
 
 const inputPagesHtmlArray = globSync(['src/pages/**/*.html'], { ignore: ['node_modules/**'] }).map(
   (file) => {
-    return [file.replace('.html', ''), fileURLToPath(new URL(file, import.meta.url))];
+    // windowsのパス指定の\\を無理やり解決する。
+    return [
+      file.replace('.html', '').replace(/\\/g, '/'),
+      fileURLToPath(new URL(file, import.meta.url)),
+    ];
   }
 );
 const inputObj = Object.fromEntries(inputPagesHtmlArray);
+console.log(inputObj);
 
 export default defineConfig({
   // @see https://github.com/crxjs/chrome-extension-tools/issues/696

@@ -15,7 +15,12 @@ const manifest = defineManifest(async (env) => ({
   },
   content_scripts: [
     {
-      matches: ['http://*/*', 'https://*/*', 'file:///*'],
+      matches: [
+        'https://*.salesforce.com/*',
+        'https://*.lightning.force.com/*',
+        'https://*.cloudforce.com/*',
+        'https://*.visualforce.com/*',
+      ],
       js: ['content/index.tsx'],
     },
   ],
@@ -32,7 +37,7 @@ const manifest = defineManifest(async (env) => ({
   web_accessible_resources: [
     {
       resources: [],
-      matches: ['<all_urls>'],
+      matches: ['images/*', 'pages/*'],
     },
   ],
   action: {
@@ -50,7 +55,15 @@ const manifest = defineManifest(async (env) => ({
     '48': 'images/extension_48.png',
     '128': 'images/extension_128.png',
   },
-  permissions: ['storage', 'tabs', 'cookies'],
+  permissions: [
+    'https://*.salesforce.com/*',
+    'https://*.force.com/*',
+    'https://*.cloudforce.com/*',
+    'https://*.visualforce.com/*',
+    'storage',
+    'tabs',
+    'cookies',
+  ],
 }));
 
 export default manifest;

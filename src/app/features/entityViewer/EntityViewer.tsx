@@ -51,9 +51,14 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   // オブジェクト側の操作
   const [objectFilteringText, setObjectFilteringText] = useState('');
   const [fieldFilteringText, setFieldFilteringText] = useState('');
-  const isFavoriteObject = useMemo(() => {
-    return favoriteObjects.some((field) => field.item === objectFilteringText);
-  }, [objectFilteringText, favoriteObjects]);
+  const objectOptions = useMemo(
+    () => favoriteObjects.map((object) => object.item),
+    [favoriteObjects]
+  );
+  const isFavoriteObject = useMemo(
+    () => favoriteObjects.some((field) => field.item === objectFilteringText),
+    [objectFilteringText, favoriteObjects]
+  );
   const filterdObjects = useMemo(() => {
     return objectInformations.filter((object) => {
       return object.some((o) => o?.value?.includes(objectFilteringText));
@@ -85,6 +90,7 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   };
 
   // 項目側の操作
+  const fieldOptions = useMemo(() => favoriteFields.map((field) => field.item), [favoriteFields]);
   const isFavoriteField = useMemo(() => {
     return favoriteFields.some((field) => field.item === fieldFilteringText);
   }, [fieldFilteringText, favoriteFields]);
@@ -102,7 +108,8 @@ export const EntityViewer: FC<EntityViewerProps> = ({
           <Grid xs={11}>
             <Autocomplete
               freeSolo
-              options={favoriteObjects.map((object) => object.item)}
+              options={objectOptions}
+              filterOptions={() => objectOptions}
               onChange={(_, value) => {
                 setFieldFilteringText('');
                 setObjectFilteringText(value ?? '');
@@ -162,7 +169,8 @@ export const EntityViewer: FC<EntityViewerProps> = ({
           <Grid xs={11}>
             <Autocomplete
               freeSolo
-              options={favoriteFields.map((field) => field.item)}
+              options={fieldOptions}
+              filterOptions={() => fieldOptions}
               onChange={(_, value) => setFieldFilteringText(value ?? '')}
               onInputChange={(_, value) => setFieldFilteringText(value)}
               renderInput={(params) => (

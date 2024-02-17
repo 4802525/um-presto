@@ -42,9 +42,11 @@ export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
   const [fieldFilteringText, setFieldFilteringText] = useState('');
   const [filterdFields, setFilterdFields] = useState<Matrix<CellBase>>([]);
 
-  const isFavorite = useMemo(() => {
-    return favoriteFields.some((field) => field.item === fieldFilteringText);
-  }, [fieldFilteringText, favoriteFields]);
+  const fieldOptions = useMemo(() => favoriteFields.map((field) => field.item), [favoriteFields]);
+  const isFavorite = useMemo(
+    () => favoriteFields.some((field) => field.item === fieldFilteringText),
+    [fieldFilteringText, favoriteFields]
+  );
 
   const tooManyFields = filterdFields.length > LIMIT_DISPLAY;
 
@@ -55,7 +57,8 @@ export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
           <Grid item xs={10}>
             <Autocomplete
               freeSolo
-              options={favoriteFields.map((field) => field.item)}
+              options={fieldOptions}
+              filterOptions={() => fieldOptions}
               onChange={(_, value) => setFieldFilteringText(value ?? '')}
               onInputChange={(_, value) => setFieldFilteringText(value)}
               renderInput={(params) => (

@@ -1,4 +1,5 @@
-import { Grid, TextField, Autocomplete, IconButton } from '@mui/material';
+import { Grid, TextField, Autocomplete, IconButton, Box } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { FC, useEffect, useMemo, useState } from 'react';
@@ -59,6 +60,28 @@ export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
               freeSolo
               options={fieldOptions}
               filterOptions={() => fieldOptions}
+              renderOption={(props, option) => (
+                <Grid container justifyContent="space-between">
+                  <Grid item xs={11}>
+                    <li {...props}>{option}</li>
+                  </Grid>
+                  <Grid item>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const newFavoriteFields = favoriteFields.filter(
+                          (field) => field.item !== option
+                        );
+                        ChromeStorage.set({ [StorageKey.FIELD_FAVORITE]: newFavoriteFields });
+                        setFavoriteFields(newFavoriteFields);
+                      }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </Grid>
+                </Grid>
+              )}
               onChange={(_, value) => setFieldFilteringText(value ?? '')}
               onInputChange={(_, value) => setFieldFilteringText(value)}
               renderInput={(params) => (

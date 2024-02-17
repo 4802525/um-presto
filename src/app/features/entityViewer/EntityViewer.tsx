@@ -8,7 +8,8 @@ import Spreadsheet, {
   Selection,
 } from 'react-spreadsheet';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Autocomplete, IconButton, TextField } from '@mui/material';
+import { Autocomplete, Box, IconButton, TextField } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { ChromeStorage } from '../../../foundations/storages/ChromeStorage';
@@ -110,6 +111,30 @@ export const EntityViewer: FC<EntityViewerProps> = ({
               freeSolo
               options={objectOptions}
               filterOptions={() => objectOptions}
+              renderOption={(props, option) => (
+                <>
+                  <Grid container justifyContent="space-between">
+                    <Grid xs={11}>
+                      <li {...props}>{option}</li>
+                    </Grid>
+                    <Grid>
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const newFavoriteObjects = favoriteObjects.filter(
+                            (object) => object.item !== option
+                          );
+                          ChromeStorage.set({ [StorageKey.OBJECT_FAVORITE]: newFavoriteObjects });
+                          setFavoriteObjects(newFavoriteObjects);
+                        }}
+                      >
+                        <CloseIcon fontSize="small" />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                </>
+              )}
               onChange={(_, value) => {
                 setFieldFilteringText('');
                 setObjectFilteringText(value ?? '');
@@ -171,6 +196,28 @@ export const EntityViewer: FC<EntityViewerProps> = ({
               freeSolo
               options={fieldOptions}
               filterOptions={() => fieldOptions}
+              renderOption={(props, option) => (
+                <Grid container justifyContent="space-between">
+                  <Grid xs={11}>
+                    <li {...props}>{option}</li>
+                  </Grid>
+                  <Grid>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const newFavoriteFields = favoriteFields.filter(
+                          (field) => field.item !== option
+                        );
+                        ChromeStorage.set({ [StorageKey.FIELD_FAVORITE]: newFavoriteFields });
+                        setFavoriteFields(newFavoriteFields);
+                      }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </Grid>
+                </Grid>
+              )}
               onChange={(_, value) => setFieldFilteringText(value ?? '')}
               onInputChange={(_, value) => setFieldFilteringText(value)}
               renderInput={(params) => (

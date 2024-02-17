@@ -1,7 +1,15 @@
+import { Grid } from '@mui/material';
+
+const OPTION_SYMBOLE = Symbol('Option');
+
 const Options = () => {
   return (
-    <div className="flex h-screen items-center justify-center">
-      <h1>Options</h1>
+    <div className="p-2 h-screen w-screen">
+      <Grid container spacing={1}>
+        <Grid item xs={12}>
+          <div className="flex justify-center mt-2 text-base">Options</div>
+        </Grid>
+      </Grid>
     </div>
   );
 };

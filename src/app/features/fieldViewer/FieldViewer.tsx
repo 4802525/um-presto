@@ -36,7 +36,7 @@ export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
   return (
     <>
       <Grid container spacing={1}>
-        <Grid xs={2} className="p-2">
+        <Grid item xs={2} className="p-2">
           <TextField
             label="項目絞り込み"
             value={fieldFilteringText}
@@ -58,12 +58,13 @@ export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
             }}
           />
         </Grid>
-        <Grid xs={10} className="p-2">
+        <Grid item xs={10} className="p-2">
           {tooManyFields && (
             <div className="flex text-base">{`${LIMIT_DISPLAY}件以下となるように絞り込んでください`}</div>
           )}
         </Grid>
         <Grid
+          item
           style={{
             maxWidth: '100%',
             width: 'fit-content',

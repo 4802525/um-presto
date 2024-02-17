@@ -84,7 +84,7 @@ const EntityView = () => {
 
   return (
     <Grid container className="p-2 h-screen w-screen">
-      <Grid xs={12}>
+      <Grid item xs={12}>
         <div className="flex justify-center mt-2 text-base">Entity Viewer</div>
       </Grid>
 
@@ -105,7 +105,7 @@ const EntityView = () => {
 
       {tab === 0 && (
         <>
-          <Grid xs={12}>
+          <Grid item xs={12}>
             <ObjectSettingIconButton
               instanceUrl={sfConnection.instanceUrl ?? ''}
               entity={selectedEntity}
@@ -124,7 +124,7 @@ const EntityView = () => {
               label="UMのみ"
             />
           </Grid>
-          <Grid xs={12}>
+          <Grid item xs={12}>
             <EntityViewer
               objectInformations={objectInformations}
               fieldInformationsByObject={fieldInformationsByObject}
@@ -137,7 +137,7 @@ const EntityView = () => {
       )}
 
       {tab === 1 && (
-        <Grid xs={12}>
+        <Grid item xs={12}>
           <FieldViewer fieldInformations={fieldInformations} />
         </Grid>
       )}

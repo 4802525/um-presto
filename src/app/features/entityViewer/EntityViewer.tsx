@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import Spreadsheet, {
   CellBase,
   EmptySelection,
@@ -14,7 +14,7 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { ChromeStorage } from '../../../foundations/storages/ChromeStorage';
 import { StorageKey } from '../../../foundations/storages/StorageKey';
-import { FavoriteItem } from '../../../types/FavoriteItem';
+import { FavoriteItem, compareFavoriteItem } from '../../../types/FavoriteItem';
 
 const isEmptySelection = (selection: Selection): selection is EmptySelection => {
   return selection.equals(new EmptySelection());
@@ -53,7 +53,7 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   const [objectFilteringText, setObjectFilteringText] = useState('');
   const [fieldFilteringText, setFieldFilteringText] = useState('');
   const objectOptions = useMemo(
-    () => favoriteObjects.map((object) => object.item),
+    () => favoriteObjects.toSorted(compareFavoriteItem).map((object) => object.item),
     [favoriteObjects]
   );
   const isFavoriteObject = useMemo(
@@ -69,6 +69,33 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   const [objectSelection, setObjectSelection] = useState<EntireRowsSelection | EmptySelection>(
     new EmptySelection()
   );
+  const onChangeObjectFilteringText = (_: SyntheticEvent<Element, Event>, value: string | null) => {
+    setFieldFilteringText('');
+    setObjectFilteringText(value ?? '');
+    // お気に入りが選択された場合は，最終使用日時を更新する
+    const newFavoriteObjects = [...favoriteObjects];
+    const favorite = newFavoriteObjects.find((object) => object.item === value);
+    if (!favorite) {
+      return;
+    }
+
+    favorite.lastUsed = new Date();
+    setFavoriteObjects(newFavoriteObjects);
+    ChromeStorage.set({ [StorageKey.OBJECT_FAVORITE]: newFavoriteObjects });
+  };
+
+  const onClickFavoriteObjectIcon = () => {
+    const newFavoriteObject: FavoriteItem = {
+      item: objectFilteringText,
+      lastUsed: new Date(),
+    };
+    const newFavoriteObjects = isFavoriteObject
+      ? favoriteObjects.filter((object) => object.item !== objectFilteringText)
+      : [...favoriteObjects, newFavoriteObject];
+    ChromeStorage.set({ [StorageKey.OBJECT_FAVORITE]: newFavoriteObjects });
+    setFavoriteObjects(newFavoriteObjects);
+  };
+
   const onSelectObject = (active: Point) => {
     const selection = new EntireRowsSelection(active.row, active.row);
     setObjectSelection(selection);
@@ -91,7 +118,10 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   };
 
   // 項目側の操作
-  const fieldOptions = useMemo(() => favoriteFields.map((field) => field.item), [favoriteFields]);
+  const fieldOptions = useMemo(
+    () => favoriteFields.toSorted(compareFavoriteItem).map((field) => field.item),
+    [favoriteFields]
+  );
   const isFavoriteField = useMemo(() => {
     return favoriteFields.some((field) => field.item === fieldFilteringText);
   }, [fieldFilteringText, favoriteFields]);
@@ -102,6 +132,30 @@ export const EntityViewer: FC<EntityViewerProps> = ({
     });
   }, [fieldInformationsByObject, filterdObjects, objectSelection, fieldFilteringText]);
 
+  const onChangeFieldFilteringText = (_: SyntheticEvent<Element, Event>, value: string | null) => {
+    setFieldFilteringText(value ?? '');
+    // お気に入りが選択された場合は，最終使用日時を更新する
+    const newFavoriteFields = [...favoriteFields];
+    const favorite = newFavoriteFields.find((field) => field.item === value);
+    if (!favorite) {
+      return;
+    }
+
+    favorite.lastUsed = new Date();
+    setFavoriteFields(newFavoriteFields);
+    ChromeStorage.set({ [StorageKey.FIELD_FAVORITE]: newFavoriteFields });
+  };
+  const onClickFieldFavoriteIcon = () => {
+    const newFavoriteField: FavoriteItem = {
+      item: fieldFilteringText,
+      lastUsed: new Date(),
+    };
+    const newFavoriteFields = isFavoriteField
+      ? favoriteFields.filter((field) => field.item !== fieldFilteringText)
+      : [...favoriteFields, newFavoriteField];
+    ChromeStorage.set({ [StorageKey.FIELD_FAVORITE]: newFavoriteFields });
+    setFavoriteFields(newFavoriteFields);
+  };
   return (
     <>
       <Grid container spacing={1}>
@@ -112,37 +166,29 @@ export const EntityViewer: FC<EntityViewerProps> = ({
               options={objectOptions}
               filterOptions={() => objectOptions}
               renderOption={(props, option) => (
-                <>
-                  <Grid container justifyContent="space-between">
-                    <Grid xs={11}>
-                      <li {...props}>{option}</li>
-                    </Grid>
-                    <Grid>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const newFavoriteObjects = favoriteObjects.filter(
-                            (object) => object.item !== option
-                          );
-                          ChromeStorage.set({ [StorageKey.OBJECT_FAVORITE]: newFavoriteObjects });
-                          setFavoriteObjects(newFavoriteObjects);
-                        }}
-                      >
-                        <CloseIcon fontSize="small" />
-                      </IconButton>
-                    </Grid>
+                <Grid container justifyContent="space-between">
+                  <Grid xs={11}>
+                    <li {...props}>{option}</li>
                   </Grid>
-                </>
+                  <Grid>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const newFavoriteObjects = favoriteObjects.filter(
+                          (object) => object.item !== option
+                        );
+                        ChromeStorage.set({ [StorageKey.OBJECT_FAVORITE]: newFavoriteObjects });
+                        setFavoriteObjects(newFavoriteObjects);
+                      }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </Grid>
+                </Grid>
               )}
-              onChange={(_, value) => {
-                setFieldFilteringText('');
-                setObjectFilteringText(value ?? '');
-              }}
-              onInputChange={(_, value) => {
-                setFieldFilteringText('');
-                setObjectFilteringText(value);
-              }}
+              onChange={onChangeObjectFilteringText}
+              onInputChange={onChangeObjectFilteringText}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -157,17 +203,7 @@ export const EntityViewer: FC<EntityViewerProps> = ({
             <IconButton
               disabled={!objectFilteringText}
               size="small"
-              onClick={() => {
-                const newFavoriteObject: FavoriteItem = {
-                  item: objectFilteringText,
-                  lastUsed: new Date(),
-                };
-                const newFavoriteObjects = isFavoriteObject
-                  ? favoriteObjects.filter((object) => object.item !== objectFilteringText)
-                  : [...favoriteObjects, newFavoriteObject];
-                ChromeStorage.set({ [StorageKey.OBJECT_FAVORITE]: newFavoriteObjects });
-                setFavoriteObjects(newFavoriteObjects);
-              }}
+              onClick={onClickFavoriteObjectIcon}
             >
               {isFavoriteObject ? <StarIcon /> : <StarBorderIcon />}
             </IconButton>
@@ -218,8 +254,8 @@ export const EntityViewer: FC<EntityViewerProps> = ({
                   </Grid>
                 </Grid>
               )}
-              onChange={(_, value) => setFieldFilteringText(value ?? '')}
-              onInputChange={(_, value) => setFieldFilteringText(value)}
+              onChange={onChangeFieldFilteringText}
+              onInputChange={onChangeFieldFilteringText}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -234,17 +270,7 @@ export const EntityViewer: FC<EntityViewerProps> = ({
             <IconButton
               disabled={!fieldFilteringText}
               size="small"
-              onClick={() => {
-                const newFavoriteField: FavoriteItem = {
-                  item: fieldFilteringText,
-                  lastUsed: new Date(),
-                };
-                const newFavoriteFields = isFavoriteField
-                  ? favoriteFields.filter((field) => field.item !== fieldFilteringText)
-                  : [...favoriteFields, newFavoriteField];
-                ChromeStorage.set({ [StorageKey.FIELD_FAVORITE]: newFavoriteFields });
-                setFavoriteFields(newFavoriteFields);
-              }}
+              onClick={onClickFieldFavoriteIcon}
             >
               {isFavoriteField ? <StarIcon /> : <StarBorderIcon />}
             </IconButton>

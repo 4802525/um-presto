@@ -51,7 +51,7 @@ export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
   return (
     <>
       <Grid container spacing={1}>
-        <Grid item xs={2} container>
+        <Grid item xs={6} container>
           <Grid item xs={10}>
             <Autocomplete
               freeSolo
@@ -103,7 +103,7 @@ export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
           </Grid>
         </Grid>
 
-        <Grid item xs={9}>
+        <Grid item xs={6}>
           {tooManyFields && (
             <div className="flex text-base">{`${LIMIT_DISPLAY}件以下となるように絞り込んでください`}</div>
           )}

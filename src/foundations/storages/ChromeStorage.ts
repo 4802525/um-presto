@@ -1,4 +1,4 @@
-export class ChromeStrage {
+export class ChromeStorage {
   static async get(key: string | string[]): Promise<{ [key: string]: unknown }> {
     return new Promise((resolve) => chrome.storage.sync.get(key, resolve));
   }

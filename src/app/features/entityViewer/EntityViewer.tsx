@@ -8,7 +8,12 @@ import Spreadsheet, {
   Selection,
 } from 'react-spreadsheet';
 import Grid from '@mui/material/Unstable_Grid2';
-import { TextField } from '@mui/material';
+import { Autocomplete, IconButton, TextField } from '@mui/material';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { ChromeStorage } from '../../../foundations/storages/ChromeStorage';
+import { StorageKey } from '../../../foundations/storages/StorageKey';
+import { FavoriteItem } from '../../../types/FavoriteItem';
 
 const isEmptySelection = (selection: Selection): selection is EmptySelection => {
   return selection.equals(new EmptySelection());
@@ -30,7 +35,14 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   fieldInformationsByObject,
   onSelect,
 }) => {
-  ENTITY_VIEW_SYMBOL;
+  const [favoriteObjects, setFavoriteObjects] = useState<FavoriteItem[]>([]);
+  const [favoriteFields, setFavoriteFields] = useState<FavoriteItem[]>([]);
+  useEffect(() => {
+    ChromeStorage.get([StorageKey.OBJECT_FAVORITE, StorageKey.FIELD_FAVORITE]).then((items) => {
+      setFavoriteObjects((items[StorageKey.OBJECT_FAVORITE] ?? []) as FavoriteItem[]);
+      setFavoriteFields((items[StorageKey.FIELD_FAVORITE] ?? []) as FavoriteItem[]);
+    });
+  }, [ENTITY_VIEW_SYMBOL]);
   useEffect(() => {
     setFieldFilteringText('');
     setDefaultObject();
@@ -39,7 +51,9 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   // オブジェクト側の操作
   const [objectFilteringText, setObjectFilteringText] = useState('');
   const [fieldFilteringText, setFieldFilteringText] = useState('');
-
+  const isFavoriteObject = useMemo(() => {
+    return favoriteObjects.some((field) => field.item === objectFilteringText);
+  }, [objectFilteringText, favoriteObjects]);
   const filterdObjects = useMemo(() => {
     return objectInformations.filter((object) => {
       return object.some((o) => o?.value?.includes(objectFilteringText));
@@ -71,6 +85,9 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   };
 
   // 項目側の操作
+  const isFavoriteField = useMemo(() => {
+    return favoriteFields.some((field) => field.item === fieldFilteringText);
+  }, [fieldFilteringText, favoriteFields]);
   const filterdFields = useMemo(() => {
     const fields = fieldInformationsByObject[selectedObjectName(objectSelection)] ?? [];
     return fields.filter((field) => {
@@ -81,17 +98,47 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   return (
     <>
       <Grid container spacing={1}>
-        <Grid xs={5}>
-          <Grid xs={12}>
-            <TextField
-              label="オブジェクト絞り込み"
-              value={objectFilteringText}
-              variant="standard"
-              onChange={(event) => {
+        <Grid xs={5} container>
+          <Grid xs={11}>
+            <Autocomplete
+              freeSolo
+              options={favoriteObjects.map((object) => object.item)}
+              onChange={(_, value) => {
                 setFieldFilteringText('');
-                setObjectFilteringText(event.target.value);
+                setObjectFilteringText(value ?? '');
               }}
+              onInputChange={(_, value) => {
+                setFieldFilteringText('');
+                setObjectFilteringText(value);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="オブジェクト絞り込み"
+                  value={objectFilteringText}
+                  variant="standard"
+                />
+              )}
             />
+          </Grid>
+          <Grid xs>
+            <IconButton
+              disabled={!objectFilteringText}
+              size="small"
+              onClick={() => {
+                const newFavoriteObject: FavoriteItem = {
+                  item: objectFilteringText,
+                  lastUsed: new Date(),
+                };
+                const newFavoriteObjects = isFavoriteObject
+                  ? favoriteObjects.filter((object) => object.item !== objectFilteringText)
+                  : [...favoriteObjects, newFavoriteObject];
+                ChromeStorage.set({ [StorageKey.OBJECT_FAVORITE]: newFavoriteObjects });
+                setFavoriteObjects(newFavoriteObjects);
+              }}
+            >
+              {isFavoriteObject ? <StarIcon /> : <StarBorderIcon />}
+            </IconButton>
           </Grid>
           <Grid
             xs={12}
@@ -111,14 +158,41 @@ export const EntityViewer: FC<EntityViewerProps> = ({
           </Grid>
         </Grid>
 
-        <Grid xs={7}>
-          <Grid xs={12} className="p-2">
-            <TextField
-              label="項目絞り込み"
-              value={fieldFilteringText}
-              variant="standard"
-              onChange={(event) => setFieldFilteringText(event.target.value)}
+        <Grid xs={7} container>
+          <Grid xs={11}>
+            <Autocomplete
+              freeSolo
+              options={favoriteFields.map((field) => field.item)}
+              onChange={(_, value) => setFieldFilteringText(value ?? '')}
+              onInputChange={(_, value) => setFieldFilteringText(value)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="項目絞り込み"
+                  value={fieldFilteringText}
+                  variant="standard"
+                />
+              )}
             />
+          </Grid>
+          <Grid xs>
+            <IconButton
+              disabled={!fieldFilteringText}
+              size="small"
+              onClick={() => {
+                const newFavoriteField: FavoriteItem = {
+                  item: fieldFilteringText,
+                  lastUsed: new Date(),
+                };
+                const newFavoriteFields = isFavoriteField
+                  ? favoriteFields.filter((field) => field.item !== fieldFilteringText)
+                  : [...favoriteFields, newFavoriteField];
+                ChromeStorage.set({ [StorageKey.FIELD_FAVORITE]: newFavoriteFields });
+                setFavoriteFields(newFavoriteFields);
+              }}
+            >
+              {isFavoriteField ? <StarIcon /> : <StarBorderIcon />}
+            </IconButton>
           </Grid>
           <Grid
             xs={12}

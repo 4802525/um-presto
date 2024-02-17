@@ -84,16 +84,8 @@ export default class EntityViewService {
         })),
       ],
       where: [
-        // 不要なオブジェクトを除去
-        [{ field: f.select('qualifiedApiName'), val: '%Share', op: 'LIKE', not: true }],
-        [{ field: f.select('qualifiedApiName'), val: '%Feed', op: 'LIKE', not: true }],
-        [{ field: f.select('qualifiedApiName'), val: '%History', op: 'LIKE', not: true }],
-        [{ field: f.select('qualifiedApiName'), val: '%Event', op: 'LIKE', not: true }],
-        [{ field: f.select('qualifiedApiName'), val: '%Metric', op: 'LIKE', not: true }],
-        [{ field: f.select('qualifiedApiName'), val: '%Template', op: 'LIKE', not: true }],
-        [{ field: f.select('qualifiedApiName'), val: '%Brand', op: 'LIKE', not: true }],
-        [{ field: f.select('qualifiedApiName'), val: '%Role', op: 'LIKE', not: true }],
-        [{ field: f.select('qualifiedApiName'), val: '%Policy', op: 'LIKE', not: true }],
+        // カスタマイズ可能なオブジェクトのみ取得
+        [{ field: f.select('isCustomizable'), val: true, op: '=' }],
       ],
       orderBy: [{ field: f.select('qualifiedApiName') }],
     }));

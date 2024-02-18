@@ -1,4 +1,4 @@
-import { FC, SyntheticEvent, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import Spreadsheet, {
   CellBase,
   EmptySelection,
@@ -8,13 +8,10 @@ import Spreadsheet, {
   Selection,
 } from 'react-spreadsheet';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Autocomplete, Box, IconButton, TextField } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import StarIcon from '@mui/icons-material/Star';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { ChromeStorage } from '../../../foundations/storages/ChromeStorage';
 import { StorageKey } from '../../../foundations/storages/StorageKey';
-import { FavoriteItem, compareFavoriteItem } from '../../../types/FavoriteItem';
+import { FavoriteItem } from '../../../types/FavoriteItem';
+import { FavoriteAutoComplete } from '../../../foundations/favoriteAutoComplete/FavoriteAutoComplete';
 
 const isEmptySelection = (selection: Selection): selection is EmptySelection => {
   return selection.equals(new EmptySelection());
@@ -52,14 +49,6 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   // オブジェクト側の操作
   const [objectFilteringText, setObjectFilteringText] = useState('');
   const [fieldFilteringText, setFieldFilteringText] = useState('');
-  const objectOptions = useMemo(
-    () => favoriteObjects.toSorted(compareFavoriteItem).map((object) => object.item),
-    [favoriteObjects]
-  );
-  const isFavoriteObject = useMemo(
-    () => favoriteObjects.some((field) => field.item === objectFilteringText),
-    [objectFilteringText, favoriteObjects]
-  );
   const filterdObjects = useMemo(() => {
     return objectInformations.filter((object) => {
       return object.some((o) => o?.value?.includes(objectFilteringText));
@@ -69,9 +58,9 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   const [objectSelection, setObjectSelection] = useState<EntireRowsSelection | EmptySelection>(
     new EmptySelection()
   );
-  const onChangeObjectFilteringText = (_: SyntheticEvent<Element, Event>, value: string | null) => {
+  const onChangeObjectFilteringText = (value: string) => {
     setFieldFilteringText('');
-    setObjectFilteringText(value ?? '');
+    setObjectFilteringText(value);
     // お気に入りが選択された場合は，最終使用日時を更新する
     const newFavoriteObjects = [...favoriteObjects];
     const favorite = newFavoriteObjects.find((object) => object.item === value);
@@ -79,21 +68,9 @@ export const EntityViewer: FC<EntityViewerProps> = ({
       return;
     }
 
-    favorite.lastUsed = new Date();
+    favorite.lastUsed = new Date().getTime();
     setFavoriteObjects(newFavoriteObjects);
     ChromeStorage.set({ [StorageKey.OBJECT_FAVORITE]: newFavoriteObjects });
-  };
-
-  const onClickFavoriteObjectIcon = () => {
-    const newFavoriteObject: FavoriteItem = {
-      item: objectFilteringText,
-      lastUsed: new Date(),
-    };
-    const newFavoriteObjects = isFavoriteObject
-      ? favoriteObjects.filter((object) => object.item !== objectFilteringText)
-      : [...favoriteObjects, newFavoriteObject];
-    ChromeStorage.set({ [StorageKey.OBJECT_FAVORITE]: newFavoriteObjects });
-    setFavoriteObjects(newFavoriteObjects);
   };
 
   const onSelectObject = (active: Point) => {
@@ -118,22 +95,8 @@ export const EntityViewer: FC<EntityViewerProps> = ({
   };
 
   // 項目側の操作
-  const fieldOptions = useMemo(
-    () => favoriteFields.toSorted(compareFavoriteItem).map((field) => field.item),
-    [favoriteFields]
-  );
-  const isFavoriteField = useMemo(() => {
-    return favoriteFields.some((field) => field.item === fieldFilteringText);
-  }, [fieldFilteringText, favoriteFields]);
-  const filterdFields = useMemo(() => {
-    const fields = fieldInformationsByObject[selectedObjectName(objectSelection)] ?? [];
-    return fields.filter((field) => {
-      return field.some((f) => f?.value?.includes(fieldFilteringText));
-    });
-  }, [fieldInformationsByObject, filterdObjects, objectSelection, fieldFilteringText]);
-
-  const onChangeFieldFilteringText = (_: SyntheticEvent<Element, Event>, value: string | null) => {
-    setFieldFilteringText(value ?? '');
+  const onChangeFieldFilteringText = (value: string) => {
+    setFieldFilteringText(value);
     // お気に入りが選択された場合は，最終使用日時を更新する
     const newFavoriteFields = [...favoriteFields];
     const favorite = newFavoriteFields.find((field) => field.item === value);
@@ -141,72 +104,32 @@ export const EntityViewer: FC<EntityViewerProps> = ({
       return;
     }
 
-    favorite.lastUsed = new Date();
+    favorite.lastUsed = new Date().getTime();
     setFavoriteFields(newFavoriteFields);
     ChromeStorage.set({ [StorageKey.FIELD_FAVORITE]: newFavoriteFields });
   };
-  const onClickFieldFavoriteIcon = () => {
-    const newFavoriteField: FavoriteItem = {
-      item: fieldFilteringText,
-      lastUsed: new Date(),
-    };
-    const newFavoriteFields = isFavoriteField
-      ? favoriteFields.filter((field) => field.item !== fieldFilteringText)
-      : [...favoriteFields, newFavoriteField];
-    ChromeStorage.set({ [StorageKey.FIELD_FAVORITE]: newFavoriteFields });
-    setFavoriteFields(newFavoriteFields);
-  };
+  const filterdFields = useMemo(() => {
+    const fields = fieldInformationsByObject[selectedObjectName(objectSelection)] ?? [];
+    return fields.filter((field) => {
+      return field.some((f) => f?.value?.includes(fieldFilteringText));
+    });
+  }, [fieldInformationsByObject, filterdObjects, objectSelection, fieldFilteringText]);
+
   return (
     <>
       <Grid container spacing={1}>
-        <Grid xs={5} container>
-          <Grid xs={11}>
-            <Autocomplete
-              freeSolo
-              options={objectOptions}
-              filterOptions={() => objectOptions}
-              renderOption={(props, option) => (
-                <Grid container justifyContent="space-between">
-                  <Grid xs={11}>
-                    <li {...props}>{option}</li>
-                  </Grid>
-                  <Grid>
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const newFavoriteObjects = favoriteObjects.filter(
-                          (object) => object.item !== option
-                        );
-                        ChromeStorage.set({ [StorageKey.OBJECT_FAVORITE]: newFavoriteObjects });
-                        setFavoriteObjects(newFavoriteObjects);
-                      }}
-                    >
-                      <CloseIcon fontSize="small" />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-              )}
+        <Grid xs={5} container alignItems="center">
+          <Grid xs={12}>
+            <FavoriteAutoComplete
+              label="オブジェクト絞り込み"
+              value={objectFilteringText}
+              favoriteItems={favoriteObjects}
+              setFavoriteItems={(favoriteItems) => {
+                ChromeStorage.set({ [StorageKey.OBJECT_FAVORITE]: favoriteItems });
+                setFavoriteObjects(favoriteItems);
+              }}
               onChange={onChangeObjectFilteringText}
-              onInputChange={onChangeObjectFilteringText}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="オブジェクト絞り込み"
-                  value={objectFilteringText}
-                  variant="standard"
-                />
-              )}
             />
-          </Grid>
-          <Grid xs>
-            <IconButton
-              disabled={!objectFilteringText}
-              size="small"
-              onClick={onClickFavoriteObjectIcon}
-            >
-              {isFavoriteObject ? <StarIcon /> : <StarBorderIcon />}
-            </IconButton>
           </Grid>
           <Grid
             xs={12}
@@ -226,54 +149,18 @@ export const EntityViewer: FC<EntityViewerProps> = ({
           </Grid>
         </Grid>
 
-        <Grid xs={7} container>
-          <Grid xs={11}>
-            <Autocomplete
-              freeSolo
-              options={fieldOptions}
-              filterOptions={() => fieldOptions}
-              renderOption={(props, option) => (
-                <Grid container justifyContent="space-between">
-                  <Grid xs={11}>
-                    <li {...props}>{option}</li>
-                  </Grid>
-                  <Grid>
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const newFavoriteFields = favoriteFields.filter(
-                          (field) => field.item !== option
-                        );
-                        ChromeStorage.set({ [StorageKey.FIELD_FAVORITE]: newFavoriteFields });
-                        setFavoriteFields(newFavoriteFields);
-                      }}
-                    >
-                      <CloseIcon fontSize="small" />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-              )}
+        <Grid xs={7} container alignItems="center">
+          <Grid xs={12}>
+            <FavoriteAutoComplete
+              label="項目絞り込み"
+              value={fieldFilteringText}
+              favoriteItems={favoriteFields}
+              setFavoriteItems={(favoriteItems) => {
+                ChromeStorage.set({ [StorageKey.FIELD_FAVORITE]: favoriteItems });
+                setFavoriteFields(favoriteItems);
+              }}
               onChange={onChangeFieldFilteringText}
-              onInputChange={onChangeFieldFilteringText}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="項目絞り込み"
-                  value={fieldFilteringText}
-                  variant="standard"
-                />
-              )}
             />
-          </Grid>
-          <Grid xs>
-            <IconButton
-              disabled={!fieldFilteringText}
-              size="small"
-              onClick={onClickFieldFavoriteIcon}
-            >
-              {isFavoriteField ? <StarIcon /> : <StarBorderIcon />}
-            </IconButton>
           </Grid>
           <Grid
             xs={12}

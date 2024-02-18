@@ -1,6 +1,6 @@
 export interface FavoriteItem {
   item: string;
-  lastUsed: Date;
+  lastUsed: number;
 }
 
 export const compareFavoriteItem = (a: FavoriteItem, b: FavoriteItem) => {

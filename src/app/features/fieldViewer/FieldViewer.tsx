@@ -1,10 +1,9 @@
 import { Grid } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 import Spreadsheet, { CellBase, Matrix } from 'react-spreadsheet';
-import { StorageKey } from '../../../foundations/storages/StorageKey';
-import { ChromeStorage } from '../../../foundations/storages/ChromeStorage';
+import { ChromeStorage, StorageKey } from '../../../foundations/storages';
 import { FavoriteItem } from '../../../types/FavoriteItem';
-import { FavoriteAutoComplete } from '../../../foundations/favoriteAutoComplete/FavoriteAutoComplete';
+import { FavoriteAutoComplete } from '../../../foundations/favoriteAutoComplete';
 
 const FIELD_VIEW_SYMBOL = Symbol('FieldViewSymbol');
 

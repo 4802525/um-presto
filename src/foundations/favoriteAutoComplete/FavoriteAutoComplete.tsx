@@ -16,7 +16,8 @@ interface FavoriteAutoCompleteProps {
 
 export const FavoriteAutoComplete: FC<FavoriteAutoCompleteProps> = (props) => {
   const favoriteOptions = useMemo(() => {
-    return props.favoriteItems.toSorted(compareFavoriteItem).map((item) => item.item);
+    // 非破壊的なtoSortedを使うべきだが，buildエラーとなるため，sortを使用
+    return [...props.favoriteItems].sort(compareFavoriteItem).map((item) => item.item);
   }, [props.favoriteItems]);
   const isFavorite = useMemo(
     () => props.favoriteItems.some((field) => field.item === props.value),

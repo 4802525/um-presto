@@ -8,10 +8,9 @@ import Spreadsheet, {
   Selection,
 } from 'react-spreadsheet';
 import Grid from '@mui/material/Unstable_Grid2';
-import { ChromeStorage } from '../../../foundations/storages/ChromeStorage';
-import { StorageKey } from '../../../foundations/storages/StorageKey';
+import { ChromeStorage, StorageKey } from '../../../foundations/storages';
 import { FavoriteItem } from '../../../types/FavoriteItem';
-import { FavoriteAutoComplete } from '../../../foundations/favoriteAutoComplete/FavoriteAutoComplete';
+import { FavoriteAutoComplete } from '../../../foundations/favoriteAutoComplete';
 
 const isEmptySelection = (selection: Selection): selection is EmptySelection => {
   return selection.equals(new EmptySelection());

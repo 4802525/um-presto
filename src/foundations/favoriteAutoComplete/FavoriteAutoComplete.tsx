@@ -14,25 +14,32 @@ interface FavoriteAutoCompleteProps {
   onBlur?: () => void;
 }
 
-export const FavoriteAutoComplete: FC<FavoriteAutoCompleteProps> = (props) => {
+export const FavoriteAutoComplete: FC<FavoriteAutoCompleteProps> = ({
+  label,
+  value,
+  favoriteItems,
+  setFavoriteItems,
+  onChange,
+  onBlur,
+}) => {
   const favoriteOptions = useMemo(() => {
     // 非破壊的なtoSortedを使うべきだが，buildエラーとなるため，sortを使用
-    return [...props.favoriteItems].sort(compareFavoriteItem).map((item) => item.item);
-  }, [props.favoriteItems]);
+    return [...favoriteItems].sort(compareFavoriteItem).map((item) => item.item);
+  }, [favoriteItems]);
   const isFavorite = useMemo(
-    () => props.favoriteItems.some((field) => field.item === props.value),
-    [props.value, props.favoriteItems]
+    () => favoriteItems.some((field) => field.item === value),
+    [value, favoriteItems]
   );
 
   const onClickFavoriteIcon = () => {
     const newFavoriteItem: FavoriteItem = {
-      item: props.value,
+      item: value,
       lastUsed: new Date().getTime(),
     };
     const newFavoriteItems = isFavorite
-      ? props.favoriteItems.filter((item) => item.item !== props.value)
-      : [...props.favoriteItems, newFavoriteItem];
-    props.setFavoriteItems(newFavoriteItems);
+      ? favoriteItems.filter((item) => item.item !== value)
+      : [...favoriteItems, newFavoriteItem];
+    setFavoriteItems(newFavoriteItems);
   };
 
   return (
@@ -51,10 +58,8 @@ export const FavoriteAutoComplete: FC<FavoriteAutoCompleteProps> = (props) => {
                     size="small"
                     onClick={(e) => {
                       e.stopPropagation();
-                      const newFavoriteItems = props.favoriteItems.filter(
-                        (item) => item.item !== option
-                      );
-                      props.setFavoriteItems(newFavoriteItems);
+                      const newFavoriteItems = favoriteItems.filter((item) => item.item !== option);
+                      setFavoriteItems(newFavoriteItems);
                     }}
                   >
                     <CloseIcon fontSize="small" />
@@ -63,21 +68,21 @@ export const FavoriteAutoComplete: FC<FavoriteAutoCompleteProps> = (props) => {
               </Grid>
             </li>
           )}
-          onChange={(_, value) => props.onChange(value ?? '')}
-          onInputChange={(_, value) => props.onChange(value)}
+          onChange={(_, value) => onChange(value ?? '')}
+          onInputChange={(_, value) => onChange(value)}
           renderInput={(params) => (
             <TextField
               {...params}
-              label={props.label}
+              label={label}
               variant="standard"
-              value={props.value}
-              onBlur={() => props.onBlur?.()}
+              value={value}
+              onBlur={() => onBlur?.()}
             />
           )}
         />
       </Grid>
       <Grid item xs={1}>
-        <IconButton disabled={!props.value} size="small" onClick={onClickFavoriteIcon}>
+        <IconButton disabled={!value} size="small" onClick={onClickFavoriteIcon}>
           {isFavorite ? <StarIcon /> : <StarBorderIcon />}
         </IconButton>
       </Grid>

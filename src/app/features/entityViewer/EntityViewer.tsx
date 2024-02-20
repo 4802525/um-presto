@@ -58,7 +58,6 @@ export const EntityViewer: FC<EntityViewerProps> = ({
     new EmptySelection()
   );
   const onChangeObjectFilteringText = (value: string) => {
-    setFieldFilteringText('');
     setObjectFilteringText(value);
     // お気に入りが選択された場合は，最終使用日時を更新する
     const newFavoriteObjects = [...favoriteObjects];

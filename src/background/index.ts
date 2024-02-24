@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.message) {
     case 'getCurrentUrl':
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const currentUrl = tabs[0].url;
+        const currentUrl = tabs[0]?.url;
         sendResponse(currentUrl ?? null);
       });
       return true;

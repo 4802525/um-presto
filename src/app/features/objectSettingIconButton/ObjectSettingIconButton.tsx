@@ -48,6 +48,10 @@ export const ObjectSettingIconButton: FC<ObjectSettingIconButtonProps> = ({
         url: `${objectUrl}/Details/view`,
       },
       {
+        label: '項目とリレーション',
+        url: `${objectUrl}/FieldsAndRelationships/view`,
+      },
+      {
         label: 'ページレイアウト割当',
         url: `${objectUrl}/PageLayouts/viewPageAssignments`,
       },

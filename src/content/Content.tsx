@@ -60,6 +60,10 @@ const Content: FC = () => {
               'isCustomSetting'
             ),
           ],
+          where: [
+            // カスタマイズ可能なオブジェクトのみ取得
+            [{ field: f.select('isCustomizable'), val: true, op: '=' }],
+          ],
         }));
 
         const queryResponse = await new Rest().toolingQuery<Layout>(

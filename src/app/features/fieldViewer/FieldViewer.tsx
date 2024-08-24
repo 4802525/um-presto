@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import Spreadsheet, { CellBase, Matrix } from 'react-spreadsheet';
 import { ChromeStorage, StorageKey } from '../../../foundations/storages';
 import { FavoriteItem } from '../../../types/FavoriteItem';
@@ -33,8 +33,18 @@ export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
     });
   }, [FIELD_VIEW_SYMBOL]);
   useEffect(() => {
-    setFieldFilteringText('');
-    setFilterdFields(fieldInformations);
+    setFilterdFields(
+      fieldInformations.filter((field) => {
+        // 項目の情報だけ絞り込む
+        return field.some((c, index) => {
+          if (index < OBJECT_COLUMN_SIZE) {
+            return false;
+          }
+
+          return c?.value?.includes(fieldFilteringText);
+        });
+      })
+    );
   }, [fieldInformations]);
 
   const [fieldFilteringText, setFieldFilteringText] = useState('');
@@ -68,7 +78,7 @@ export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
     );
   };
 
-  const tooManyFields = filterdFields.length > LIMIT_DISPLAY;
+  const tooManyFields = useMemo(() => filterdFields.length > LIMIT_DISPLAY, [filterdFields]);
 
   return (
     <>
@@ -97,7 +107,7 @@ export const FieldViewer: FC<FieldViewerProps> = ({ fieldInformations }) => {
           style={{
             maxWidth: '100%',
             width: 'fit-content',
-            height: `calc(100vh - 150px)`,
+            height: `calc(100vh - 200px)`,
             overflow: 'auto',
           }}
         >

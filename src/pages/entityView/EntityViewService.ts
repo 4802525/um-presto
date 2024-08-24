@@ -40,7 +40,7 @@ export default class EntityViewService {
           .map((field) => [
             { value: field.label, readOnly: true },
             { value: field.qualifiedApiName, readOnly: true },
-            { value: field.dataType, readOnly: true },
+            { value: field.dataType?.slice(0, 80), readOnly: true },
             { value: field.masterLabel, readOnly: true },
           ]) ?? []
       );
@@ -62,7 +62,7 @@ export default class EntityViewService {
             { value: entity.qualifiedApiName, readOnly: true },
             { value: field.label, readOnly: true },
             { value: field.qualifiedApiName, readOnly: true },
-            { value: field.dataType, readOnly: true },
+            { value: field.dataType?.slice(0, 80), readOnly: true },
             { value: field.masterLabel, readOnly: true },
           ]) ?? []
       );

@@ -8,6 +8,7 @@ import EntityViewService from './EntityViewService';
 import { PermissionSetIconButton } from '../../app/features/permissionSetIconButton';
 import { ObjectSettingIconButton } from '../../app/features/objectSettingIconButton';
 import { Layout } from '../../types/Layout';
+import { ChromeStorage, StorageKey } from '../../foundations/storages';
 
 const ENTITY_VIEW_SYMBOLE = Symbol('EntityView');
 function a11yProps(index: number) {
@@ -28,6 +29,10 @@ const EntityView = () => {
 
     sfConn.getSession(sfHost).then(() => {
       setSfConnection(sfConn);
+    });
+
+    ChromeStorage.get(StorageKey.ONLY_UM).then((items) => {
+      setOnlyUm((items[StorageKey.ONLY_UM] ?? true) as boolean);
     });
   }, [ENTITY_VIEW_SYMBOLE]);
 
@@ -93,7 +98,6 @@ const EntityView = () => {
           value={tab}
           onChange={(_, value) => {
             setSeletedObjectApiName('');
-            setOnlyUm(true);
             setTab(value);
           }}
           aria-label="tab"
@@ -120,7 +124,15 @@ const EntityView = () => {
 
             <FormControlLabel
               className="px-3"
-              control={<Checkbox checked={onlyUm} onChange={() => setOnlyUm(!onlyUm)} />}
+              control={
+                <Checkbox
+                  checked={onlyUm}
+                  onChange={() => {
+                    ChromeStorage.set({ [StorageKey.ONLY_UM]: !onlyUm });
+                    setOnlyUm(!onlyUm);
+                  }}
+                />
+              }
               label="UMのみ"
             />
           </Grid>
@@ -137,9 +149,26 @@ const EntityView = () => {
       )}
 
       {tab === 1 && (
-        <Grid item xs={12}>
-          <FieldViewer fieldInformations={fieldInformations} />
-        </Grid>
+        <>
+          <Grid item xs={12}>
+            <FormControlLabel
+              className="px-3"
+              control={
+                <Checkbox
+                  checked={onlyUm}
+                  onChange={() => {
+                    ChromeStorage.set({ [StorageKey.ONLY_UM]: !onlyUm });
+                    setOnlyUm(!onlyUm);
+                  }}
+                />
+              }
+              label="UMのみ"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <FieldViewer fieldInformations={fieldInformations} />
+          </Grid>
+        </>
       )}
     </Grid>
   );

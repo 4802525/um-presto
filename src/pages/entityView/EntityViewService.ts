@@ -7,6 +7,8 @@ const UM_NAME_SPACES = ['snps_um', 'um_gantt'];
 const UM_USED_STANDARD_OBJECTS = ['Account'];
 const UM_USED_STANDARD_FIELDS = ['Id', 'Name'];
 
+// offsetの上限は2000
+const MAX_OFFSET = 2000;
 export default class EntityViewService {
   static buildViewerColumns(entityDefinitions: EntityDefinition[], onlyUm: boolean) {
     const entityDefs = entityDefinitions.filter(
@@ -76,19 +78,41 @@ export default class EntityViewService {
   }
 
   static async retrieveEntityDefinitions() {
-    return EntityDefinition.retrieve((f) => ({
-      select: [
-        ...f.select('id', 'qualifiedApiName', 'label', 'detailUrl', 'durableId', 'isCustomSetting'),
-        f.subQuery('fields', (subF) => ({
-          select: subF.select('id', 'qualifiedApiName', 'label', 'dataType', 'masterLabel'),
-        })),
-      ],
-      where: [
-        // カスタマイズ可能なオブジェクトのみ取得
-        [{ field: f.select('isCustomizable'), val: true, op: '=' }],
-      ],
-      orderBy: [{ field: f.select('qualifiedApiName') }],
-    }));
+    const limit = 500;
+    let entities: EntityDefinition[] = [];
+    let offset = 0;
+    // 件数上限を回避するため，500件ずつ取得する
+    while (offset <= MAX_OFFSET) {
+      const records = await EntityDefinition.retrieve((f) => ({
+        select: [
+          ...f.select(
+            'id',
+            'qualifiedApiName',
+            'label',
+            'detailUrl',
+            'durableId',
+            'isCustomSetting'
+          ),
+          f.subQuery('fields', (subF) => ({
+            select: subF.select('id', 'qualifiedApiName', 'label', 'dataType', 'masterLabel'),
+          })),
+        ],
+        where: [
+          // カスタマイズ可能なオブジェクトのみ取得
+          [{ field: f.select('isCustomizable'), val: true, op: '=' }],
+        ],
+        orderBy: [{ field: f.select('qualifiedApiName') }],
+        offset: 0,
+        limit: 500,
+      }));
+      entities = entities.concat(records);
+      if (records.length !== limit) {
+        break;
+      }
+      offset += limit;
+    }
+
+    return entities;
   }
 
   static async retrieveLayouts() {
